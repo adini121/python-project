@@ -15,7 +15,10 @@ class fireplace_mv1():
         # print result
         print result[row_number]
 
-    mv1_tables = {"mv1.1":"sessionids_mv1_2014_12_16", "mv1.2":"sessionids_mv1_2014_12_22_02"}
+    mv1_tables = {"fireplace_mv1.1":"sessionids_mv1_2014_12_16", "fireplace_mv1.2":"sessionids_mv1_2014_12_22_02"}
     rows = [1, 2, 3, 4, 7, 3, 5, 6]
-    for row in rows:
-        return_sessionid(connect_mysql, mv1_tables["mv1.1"],row)
+    for table in mv1_tables:
+        tbl = mv1_tables[table]
+        print table
+        for row in rows:
+            return_sessionid(connect_mysql, tbl,row)
