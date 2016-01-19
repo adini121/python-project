@@ -3,20 +3,26 @@ import sys
 import tarfile
 import os
 
-class Dummie():
-    ref_sid="7663f5fd-5c22-4668-934a-1dbf696eedd3"
+class extract():
+    def untar(fname):
+        target_folder="."
+        for file in os.listdir("/Users/adityanisal/arbit/"):
+            with tarfile.open(fname) as tf:
+                tf.extract(target_folder)
+
+    ref_sid="42a33d42-9676-466c-9b9f-e632d772ef8f"
 
 
     ####For reference version, from first SID till last SID match actions -> Important to identify AND get test number!!!!!!!!
     # def reader(filename):
-    reference_action_file= open("/Users/adityanisal/arbit/" + ref_sid + "/" + "actions.txt")
-    ref_action_file_content=reference_action_file.read()
-    # comparison_action_file= open("/Users/adityanisal/arbit/42a33d42-9676-466c-9b9f-e632d772ef8f/actions.txt")
-    # cmp_action_file_content=comparison_action_file.read()
+    ref_action_file= open("/Users/adityanisal/arbit/42a33d42-9676-466c-9b9f-e632d772ef8f/42a33d42-9676-466c-9b9f-e632d772ef8f.txt")
+    ref_action_file_content=ref_action_file.read()
+    cmp_action_file= open("/Users/adityanisal/arbit/42a33d42-9676-466c-9b9f-e632d772ef8f/actions.txt")
+    cmp_action_file_content=cmp_action_file.read()
 
     #### Counting number of actions and matching
     ref_count=ref_action_file_content.count("actions")
-    # cmp_count=cmp_action_file_content.count("actions")
+    cmp_count=cmp_action_file_content.count("actions")
     # print "ref content:", ref_action_file_content.count("actions")
     # print "cmp content:", cmp_action_file_content.count("actions")
 
@@ -52,18 +58,16 @@ class Dummie():
     # print "actions =",reg_actions[1]
 
 
-    """For matching inner content - this works"""
-    # reg_actions_details=re.findall('\['+'42a33d42-9676-466c-9b9f-e632d772ef8f'+'\,\s(.*?)\s\{',ref_action_file_content, re.DOTALL|re.MULTILINE)
-    reg_actions_details=re.findall('\['+ref_sid+'\,\s(.*?)\s\{',ref_action_file_content, re.DOTALL|re.MULTILINE)
-    print "detailed actions=", reg_actions_details
 
-    """Inner content and everything """
-    find_element= re.findall('\['+ref_sid+'\,\sfindElement\s\{(.*?)\}\]',ref_action_file_content, re.DOTALL|re.MULTILINE)
-    # find_element_CSS= re.findall('\['+ref_sid+'\,\sfindElement\s\{using\=(.*?)\,value\=(.*?)\}\]',ref_action_file_content, re.DOTALL|re.MULTILINE)
-    print "find_element=", find_element
+    # reg_actions_details=re.findall('\['+re.escape(ref_sid)+'\,\s(.*?)\s\{',reg_actions, re.DOTALL|re.MULTILINE)
+    # reg_actions_details=re.findall('\['+ref_sid+'\,\s(.*?)\s\{',reg_actions, re.DOTALL|re.MULTILINE)
+    # print "detailed actions=", reg_actions_details
+
+
+
     ##### THIS WORKS #######
     reg_current_id=re.findall('\}\\n\sid\s\:\s(.*?)\s\\n\snextStateId',ref_action_file_content, re.DOTALL|re.MULTILINE)
-    print "current ids =", reg_current_id
+    # print "current ids =", reg_current_id
 
     ##### THIS WORKS #######
     reg_nextState_id=re.findall('\s\\n\snextStateId\s\:\sSome\((.*?)\)\}',ref_action_file_content, re.DOTALL|re.MULTILINE)

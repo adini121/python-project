@@ -16,9 +16,9 @@ class fireplace_mv1():
         print result[row_number]
 
     mv1_tables = {"fireplace_mv1.1":"sessionids_mv1_2014_12_16", "fireplace_mv1.2":"sessionids_mv1_2014_12_22_02"}
-    rows = [1, 2, 3, 4,] #Select which rows to output
+    rows = [1, 2, 3, 4, 7, 3, 5, 6]
     for table in mv1_tables:
         tbl = mv1_tables[table]
-        print "Tablename:", table #Prints table name
+        print table
         for row in rows:
             return_sessionid(connect_mysql, tbl,row)
