@@ -1,0 +1,16 @@
+Things to do:
+
+A) Database related
+1. Create database connections so you will get each row as sessionid from table
+2. Create arrays to store database names
+
+B) Regex related
+1. Create regex parsing expression for each type of query
+2. Create a class and apply parsing techniques
+
+C)Graph matching related
+1. Get current_ids of two sessionids
+2. Put it in loop to create two graphs
+3. Output isomorphism for two graphs
+4. If true return true and match actions by applying actions_regex
+5. If true, return all as true

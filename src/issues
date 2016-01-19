@@ -1,0 +1,4 @@
+'d1f0d2d5-5755-442d-b838-d0d2ff08afa8'
+'5570fc19-2aca-480c-ac47-2caca65a509f
+dictionary[i] = data[i].split(',', 1)[1].split('{', 1)[0].replace(' ', '')
+IndexError: list index out of rang
