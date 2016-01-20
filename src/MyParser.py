@@ -1,6 +1,5 @@
 import re
-from mysql_connection import MysqlPython
-connect_mysql = MysqlPython('localhost', 'root', '', 'moodle_sessionIDs')
+import sys, os, subprocess, string
 
 def extract_action_file_contents(sessionId, action_file_dir):
     try:
@@ -31,7 +30,7 @@ def get_the_action_id(file_contents):
     reg_current_id=re.findall('\}\\n\sid\s\:\s(.*?)\s\\n\snextStateId', file_contents, re.DOTALL | re.MULTILINE)
     return reg_current_id
 
-IGNORE_ACTION = ['findElements']
+IGNORE_ACTION = []
 def do_comparison(actions_in_reference_sessionId, actions_in_comp_sessionId, id_of_action_in_ref_sessionId_action_file, id_of_action_in_comp_sessionId_action_file):
 # def do_comparison(actions1, actions2, one_id, second_id, ref_sessionID, comp_sessionID):
     """do comparison"""
@@ -63,22 +62,25 @@ def do_comparison(actions_in_reference_sessionId, actions_in_comp_sessionId, id_
     list = []
     for key in number_of_actions_in_reference_sessionId:
         """If you want to ignore some actions"""
-        try:
-            one_data = reference_sessionId_action[0][key]
-            second_data = comp_sessionId_action[0][key]
-            for k, v in one_data.items():
-                if not v in IGNORE_ACTION:
-                    # print value, second_data[key]
-                    assert v == second_data[k]
-                    list.append(0)
+        # Specify : IGNORE_ACTION = ['findElements']
         # try:
-        #     if not reference_sessionId_action[0][key] in IGNORE_ACTION:
-        #         assert reference_sessionId_action[0][key] == comp_sessionId_action[0][key]
-        #         list.append(0)
+        #     one_data = reference_sessionId_action[0][key]
+        #     second_data = comp_sessionId_action[0][key]
+        #     for k, v in one_data.items():
+        #         if not v in IGNORE_ACTION:
+        #             # print value, second_data[key]
+        #             assert v == second_data[k]
+        #             list.append(0)
+        """ Original logic without ignoring actions"""
+        try:
+            if not reference_sessionId_action[0][key] in IGNORE_ACTION:
+                assert reference_sessionId_action[0][key] == comp_sessionId_action[0][key]
+                list.append(0)
         except AssertionError:
             print "Mismatched"
             print "1st file id:", id_of_action_in_ref_sessionId_action_file[key]
             print "2nd file id:", id_of_action_in_comp_sessionId_action_file[key]
+
             print "action reference_action does not match with compare_action \n", reference_sessionId_action[0][key], "\n", comp_sessionId_action[0][key]
             list.append(1)
             break
@@ -88,9 +90,9 @@ def do_comparison(actions_in_reference_sessionId, actions_in_comp_sessionId, id_
             break
 
     if 1 in list:
-        print 1
+        print "FAILED -------------------------->>>",1
     else:
-        print 0
+        print "PASSED -------------------------->>>",0
 
 def get_all_data_of_session(sessionId, directory):
     file_contents = extract_action_file_contents(sessionId, directory)
@@ -101,14 +103,14 @@ def get_all_data_of_session(sessionId, directory):
 def main(ref_sessionId_table_name, comp_sessionId_table_name, directory):
     # for row in range(len(tbl)):
     try:
-        list_of_ref_sessionIds=connect_mysql.select_moodle(ref_sessionId_table_name)
+        list_of_ref_sessionIds=connect_mysql.select_jenkins_1_580(ref_sessionId_table_name)
         print list_of_ref_sessionIds
     except:
         print "ERROR : Reference table does not exist :", ref_sessionId_table_name
 
     # for row in range(len(tbl2)):
     try:
-        list_of_comp_sessionIds=connect_mysql.select_moodle(comp_sessionId_table_name)
+        list_of_comp_sessionIds=connect_mysql.select_jenkins_1_580(comp_sessionId_table_name)
         print  list_of_comp_sessionIds
     except:
         print "ERROR : Comparable table does not exist :", comp_sessionId_table_name
@@ -126,7 +128,14 @@ def main(ref_sessionId_table_name, comp_sessionId_table_name, directory):
             print "reference sessionId table", ref_sessionId_table_name, "and comparable sessionId tables", comp_sessionId_table_name, "have different number of rows"
     except:
         print "TABLE ERROR: Please check if given reference table", ref_sessionId_table_name,  "and comparable table % exist", comp_sessionId_table_name
-tbl='sessionids_230_beta_fin'
-tbl2='sessionids_238_fin'
 
-main(tbl, tbl2, "/Users/adityanisal/Dropbox/ActionFiles/")
+from mysql_connection import MysqlPython
+connect_mysql = MysqlPython('localhost', 'root', '', 'jenkins_core_sessionIDs')
+tbl='sessionids_1_580'
+tbl2list=['sessionids_1_586']
+
+for table in tbl2list:
+    print "=============================================================================================================================================="
+    print "Version",tbl,"against",table
+    main(tbl, table, "/Users/adityanisal/Dropbox/ActionFiles/")
+    print "=============================================================================================================================================="

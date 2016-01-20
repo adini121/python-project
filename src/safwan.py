@@ -31,7 +31,7 @@ def get_the_action_id(file_contents):
     reg_current_id=re.findall('\}\\n\sid\s\:\s(.*?)\s\\n\snextStateId', file_contents, re.DOTALL | re.MULTILINE)
     return reg_current_id
 
-IGNORE_ACTION = ['findElements']
+IGNORE_ACTION = []
 def do_comparison(actions_in_reference_sessionId, actions_in_comp_sessionId, id_of_action_in_ref_sessionId_action_file, id_of_action_in_comp_sessionId_action_file):
 # def do_comparison(actions1, actions2, one_id, second_id, ref_sessionID, comp_sessionID):
     """do comparison"""
@@ -60,18 +60,18 @@ def do_comparison(actions_in_reference_sessionId, actions_in_comp_sessionId, id_
     list = []
     for key in number_of_actions_in_reference_sessionId:
         """If you want to ignore some actions"""
-        try:
-            one_data = reference_sessionId_action[0][key]
-            second_data = comp_sessionId_action[0][key]
-            for k, v in one_data.items():
-                if not v in IGNORE_ACTION:
-                    # print value, second_data[key]
-                    assert v == second_data[k]
-                    list.append(0)
         # try:
-        #     if not reference_sessionId_action[0][key] in IGNORE_ACTION:
-        #         assert reference_sessionId_action[0][key] == comp_sessionId_action[0][key]
-        #         list.append(0)
+        #     one_data = reference_sessionId_action[0][key]
+        #     second_data = comp_sessionId_action[0][key]
+        #     for k, v in one_data.items():
+        #         if not v in IGNORE_ACTION:
+        #             # print value, second_data[key]
+        #             assert v == second_data[k]
+        #             list.append(0)
+        try:
+            if not reference_sessionId_action[0][key] in IGNORE_ACTION:
+                assert reference_sessionId_action[0][key] == comp_sessionId_action[0][key]
+                list.append(0)
         except AssertionError:
             print "Mismatched"
             print "1st file id:", id_of_action_in_ref_sessionId_action_file[key]
