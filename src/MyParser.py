@@ -63,34 +63,34 @@ def do_comparison(app_name, ref_sessionId_table_name, comp_sessionId_table_name,
     list = []
     for key in number_of_actions_in_reference_sessionId:
 
-        # """ Code to generate ImageDiff. Makes use of Imagemagick's convert (http://www.imagemagick.org/script/convert.php) """
-        # num = '%d' % (test_number)
-        # imgDir='/Users/adityanisal/ImageFiles/'
-        # outDir='/Users/adityanisal/Desktop/ImageComparisonResults/' + app_name + '/'
-        # outFileName= app_name  + ref_sessionId_table_name[-6:] + '_' + comp_sessionId_table_name[-5:] + '_Test_' + num  + '.png'
-        # outFile=outDir + outFileName
-        # ref_screenshot= imgDir + ref_sessionId + '/screenshots/'+ id_of_action_in_ref_sessionId_action_file[-1] + '.png'
-        # comp_screenshot= imgDir + comp_sessionId + '/screenshots/'+ id_of_action_in_comp_sessionId_action_file[-1] + '.png'
-        # try:
-        #     p=subprocess.Popen(["/usr/local/bin/convert", "+append", ref_screenshot ,comp_screenshot, outFile],stdout=subprocess.PIPE)
-        #     return_code =p.wait()
-        #     if return_code > 0:
-        #         raise Exception('CONVERT ERROR!!')
-        #     # subprocess.call('/usr/local/bin/convert +append ' + imgDir + ref_sessionId + '/screenshots/'+ id_of_action_in_ref_sessionId_action_file[-1] + '.png' + ' ' + imgDir + comp_sessionId + '/screenshots/'+ id_of_action_in_comp_sessionId_action_file[-1] + '.png' + outDir + outFile, shell=False)
-        # except OSError:
-        #     print "Stop !!! There was an error in printing out the file! "
+        """ Code to generate ImageDiff. Makes use of Imagemagick's convert (http://www.imagemagick.org/script/convert.php) """
+        num = '%d' % (test_number)
+        imgDir='/Users/adityanisal/ImageFiles/'
+        outDir='/Users/adityanisal/Desktop/ImageComparisonResults/' + app_name + '/'
+        outFileName= app_name  + ref_sessionId_table_name[-6:] + '_' + comp_sessionId_table_name[-5:] + '_Test_' + num  + '.png'
+        outFile=outDir + outFileName
+        ref_screenshot= imgDir + ref_sessionId + '/screenshots/'+ id_of_action_in_ref_sessionId_action_file[-1] + '.png'
+        comp_screenshot= imgDir + comp_sessionId + '/screenshots/'+ id_of_action_in_comp_sessionId_action_file[-1] + '.png'
+        try:
+            p=subprocess.Popen(["/usr/local/bin/convert", "+append", ref_screenshot ,comp_screenshot, outFile],stdout=subprocess.PIPE)
+            return_code =p.wait()
+            if return_code > 0:
+                raise Exception('CONVERT ERROR!!')
+            # subprocess.call('/usr/local/bin/convert +append ' + imgDir + ref_sessionId + '/screenshots/'+ id_of_action_in_ref_sessionId_action_file[-1] + '.png' + ' ' + imgDir + comp_sessionId + '/screenshots/'+ id_of_action_in_comp_sessionId_action_file[-1] + '.png' + outDir + outFile, shell=False)
+        except OSError:
+            print "Stop !!! There was an error in printing out the file! "
 
-        # """If you want to ignore some actions"""
-        # # Specify : IGNORE_ACTION = ['findElements']
-        # # try:
-        # #     one_data = reference_sessionId_action[0][key]
-        # #     second_data = comp_sessionId_action[0][key]
-        # #     for k, v in one_data.items():
-        # #         if not v in IGNORE_ACTION:
-        # #             # print value, second_data[key]
-        # #             assert v == second_data[k]
-        # #             list.append(0)
-        # """ Original logic without ignoring actions"""
+        """If you want to ignore some actions"""
+        # Specify : IGNORE_ACTION = ['findElements']
+        # try:
+        #     one_data = reference_sessionId_action[0][key]
+        #     second_data = comp_sessionId_action[0][key]
+        #     for k, v in one_data.items():
+        #         if not v in IGNORE_ACTION:
+        #             # print value, second_data[key]
+        #             assert v == second_data[k]
+        #             list.append(0)
+        """ Original logic without ignoring actions"""
 
         """ Code to generate action file differences """
         ref_action_Id = id_of_action_in_ref_sessionId_action_file[key]
@@ -100,7 +100,6 @@ def do_comparison(app_name, ref_sessionId_table_name, comp_sessionId_table_name,
         try:
             if not reference_sessionId_action[0][key] in IGNORE_ACTION:
                 assert reference_sessionId_action[0][key] == comp_sessionId_action[0][key]
-
                 list.append(0)
         except AssertionError:
             ref_action = reference_sessionId_action[0][key]
@@ -116,14 +115,14 @@ def do_comparison(app_name, ref_sessionId_table_name, comp_sessionId_table_name,
     else:
         result= '0'
 
+    actions_difference = ''
     if ref_action and comp_action:
-        print 'Action differences for test number', test_number, ':', '\n'
-        print ref_action,'\n'
-        print comp_action
-        print '========================================================================================================================================'
+          actions_difference = '\nAction differences for test number ' + '%d' % (test_number) + ': \n' #, ref_action, comp_action
+          actions_difference = actions_difference + '%s' % str(ref_action) + '\n'
+          actions_difference = actions_difference + '%s' % str(comp_action)
 
     humanfriendly_results=[test_number, result, num_of_ref_actions, num_of_comp_actions, ref_sessionId[:18], comp_sessionId[:18], ref_action_Id[:18], comp_action_Id[:18]]
-    return humanfriendly_results
+    return humanfriendly_results, actions_difference
 
 def get_all_data_of_session(sessionId, directory):
     file_contents = extract_action_file_contents(sessionId, directory)
@@ -143,9 +142,9 @@ def main(ref_sessionId_table_name, comp_sessionId_table_name, action_files_dir, 
     except IOError:
         print "ERROR : Comparable table does not exist :", comp_sessionId_table_name
 
-    column_names = ['Test#','Result','#ref_acts', '#cmp_acts', 'ref sessionId', 'comp sessionId', 'ref action Id', 'comp action Id']
+    column_names = ['Test #','Test Result','#ref_actions', '#comp_actions', 'ref sessionId', 'comp sessionId', 'ref action Id', 'comp action Id']
     final_list=[]
-
+    action_differences_dictionary= []
     try:
         if len(list_of_ref_sessionIds) == len(list_of_comp_sessionIds):
             rows_in_ref_sessionId_table = range(len(list_of_ref_sessionIds))
@@ -153,14 +152,18 @@ def main(ref_sessionId_table_name, comp_sessionId_table_name, action_files_dir, 
                 ref_action_file_data = get_all_data_of_session(list_of_ref_sessionIds[i], action_files_dir)
                 comp_action_file_data = get_all_data_of_session(list_of_comp_sessionIds[i], action_files_dir)
                 # do_comparison(app_name, ref_sessionId_table_name, comp_sessionId_table_name,i,list_of_ref_sessionIds[i],list_of_comp_sessionIds[i],actions_in_reference_sessionId=ref_action_file_data[0], actions_in_comp_sessionId=comp_action_file_data[0], id_of_action_in_ref_sessionId_action_file=ref_action_file_data[1], id_of_action_in_comp_sessionId_action_file=comp_action_file_data[1])
-                humanfriendly_results=do_comparison(app_name, ref_sessionId_table_name, comp_sessionId_table_name,i,list_of_ref_sessionIds[i],list_of_comp_sessionIds[i],actions_in_reference_sessionId=ref_action_file_data[0], actions_in_comp_sessionId=comp_action_file_data[0], id_of_action_in_ref_sessionId_action_file=ref_action_file_data[1], id_of_action_in_comp_sessionId_action_file=comp_action_file_data[1])
+                humanfriendly_results, action_differences_string=do_comparison(app_name, ref_sessionId_table_name, comp_sessionId_table_name, i, list_of_ref_sessionIds[i], list_of_comp_sessionIds[i], actions_in_reference_sessionId=ref_action_file_data[0], actions_in_comp_sessionId=comp_action_file_data[0], id_of_action_in_ref_sessionId_action_file=ref_action_file_data[1], id_of_action_in_comp_sessionId_action_file=comp_action_file_data[1])
                 final_list.append(humanfriendly_results)
-
+                if action_differences_string != '':
+                    action_differences_dictionary.append(action_differences_string)
             """ This command prints results in a table by making use of humanfriendly tabels (https://humanfriendly.readthedocs.org/en/latest/#module-humanfriendly.tables) """
-            # print(format_pretty_table(final_list, column_names))
             with open('/Users/adityanisal/Dropbox/ExtractedResultFiles/'+ app_name  + ref_sessionId_table_name[-6:] + '_' + comp_sessionId_table_name[-5:] + '_Results.txt', 'w+') as resultfile:
                 print >> resultfile, (format_pretty_table(final_list, column_names))
-        # else:
+                for action_differences_string in action_differences_dictionary:
+                    print >> resultfile, action_differences_string
+                    print action_differences_string
+                print "success"
+        else:
             print "CAUTION! reference sessionId table: ", ref_sessionId_table_name, "and comparable sessionId table:", comp_sessionId_table_name, "Both have different number of rows"
     except:
         print "TABLE ERROR: Please check if given reference table", ref_sessionId_table_name,  "and comparable table exist", comp_sessionId_table_name
@@ -172,7 +175,7 @@ from mysql_connection import MysqlPython
 db_name = 'jenkins_core_sessionIDs'
 connect_mysql = MysqlPython('localhost', 'root', '', db_name )
 reference_version_sessionId_table= 'sessionids_1_580'
-compare_version_sessionId_table_list=['sessionids_1_586','sessionids_1_588' ]
+compare_version_sessionId_table_list=['sessionids_1_580_1','sessionids_1_580_2','sessionids_1_580_3','sessionids_1_584','sessionids_1_586','sessionids_1_588','sessionids_1_590', 'sessionids_1_592', 'sessionids_1_594' ,'sessionids_1_596']
 
 """ Call to main function """
 action_files_dir = "/Users/adityanisal/Dropbox/ActionFiles/"
