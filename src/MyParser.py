@@ -122,7 +122,7 @@ def do_comparison(app_name, ref_sessionId_table_name, comp_sessionId_table_name,
         print comp_action
         print '========================================================================================================================================'
 
-    humanfriendly_results=[test_number, result, num_of_ref_actions, num_of_comp_actions, ref_sessionId, comp_sessionId, ref_action_Id, comp_action_Id]
+    humanfriendly_results=[test_number, result, num_of_ref_actions, num_of_comp_actions, ref_sessionId[:18], comp_sessionId[:18], ref_action_Id[:18], comp_action_Id[:18]]
     return humanfriendly_results
 
 def get_all_data_of_session(sessionId, directory):
@@ -143,7 +143,7 @@ def main(ref_sessionId_table_name, comp_sessionId_table_name, action_files_dir, 
     except IOError:
         print "ERROR : Comparable table does not exist :", comp_sessionId_table_name
 
-    column_names = ['Test Number','Test Result','Number of ref actions', 'Number of comp actions', 'ref sessionId', 'comp sessionId', 'ref action Id', 'comp action Id']
+    column_names = ['Test#','Result','#ref_acts', '#cmp_acts', 'ref sessionId', 'comp sessionId', 'ref action Id', 'comp action Id']
     final_list=[]
 
     try:
@@ -157,8 +157,9 @@ def main(ref_sessionId_table_name, comp_sessionId_table_name, action_files_dir, 
                 final_list.append(humanfriendly_results)
 
             """ This command prints results in a table by making use of humanfriendly tabels (https://humanfriendly.readthedocs.org/en/latest/#module-humanfriendly.tables) """
-            print(format_pretty_table(final_list, column_names))
-
+            # print(format_pretty_table(final_list, column_names))
+            with open('/Users/adityanisal/Dropbox/ExtractedResultFiles/'+ app_name  + ref_sessionId_table_name[-6:] + '_' + comp_sessionId_table_name[-5:] + '_Results.txt', 'w+') as resultfile:
+                print >> resultfile, (format_pretty_table(final_list, column_names))
         # else:
             print "CAUTION! reference sessionId table: ", ref_sessionId_table_name, "and comparable sessionId table:", comp_sessionId_table_name, "Both have different number of rows"
     except:
