@@ -95,16 +95,16 @@ def do_comparison(app_name, ref_sessionId_table_name, comp_sessionId_table_name,
         """ Code to generate action file differences """
         ref_action_Id = id_of_action_in_ref_sessionId_action_file[key]
         comp_action_Id = id_of_action_in_comp_sessionId_action_file[key]
-        # ref_action = []
-        # comp_action = []
+        ref_action = []
+        comp_action = []
         try:
             if not reference_sessionId_action[0][key] in IGNORE_ACTION:
                 assert reference_sessionId_action[0][key] == comp_sessionId_action[0][key]
 
                 list.append(0)
         except AssertionError:
-            # ref_action = reference_sessionId_action[0][key]
-            # comp_action = comp_sessionId_action[0][key]
+            ref_action = reference_sessionId_action[0][key]
+            comp_action = comp_sessionId_action[0][key]
             list.append(1)
             break
         except KeyError:
@@ -116,8 +116,13 @@ def do_comparison(app_name, ref_sessionId_table_name, comp_sessionId_table_name,
     else:
         result= '0'
 
+    if ref_action and comp_action:
+        print 'Action differences for test number', test_number, ':', '\n'
+        print ref_action,'\n'
+        print comp_action
+        print '========================================================================================================================================'
+
     humanfriendly_results=[test_number, result, num_of_ref_actions, num_of_comp_actions, ref_sessionId, comp_sessionId, ref_action_Id, comp_action_Id]
-    # action_differences = [ref_action, comp_action]
     return humanfriendly_results
 
 def get_all_data_of_session(sessionId, directory):
@@ -148,12 +153,12 @@ def main(ref_sessionId_table_name, comp_sessionId_table_name, action_files_dir, 
                 ref_action_file_data = get_all_data_of_session(list_of_ref_sessionIds[i], action_files_dir)
                 comp_action_file_data = get_all_data_of_session(list_of_comp_sessionIds[i], action_files_dir)
                 # do_comparison(app_name, ref_sessionId_table_name, comp_sessionId_table_name,i,list_of_ref_sessionIds[i],list_of_comp_sessionIds[i],actions_in_reference_sessionId=ref_action_file_data[0], actions_in_comp_sessionId=comp_action_file_data[0], id_of_action_in_ref_sessionId_action_file=ref_action_file_data[1], id_of_action_in_comp_sessionId_action_file=comp_action_file_data[1])
-                my_results=do_comparison(app_name, ref_sessionId_table_name, comp_sessionId_table_name,i,list_of_ref_sessionIds[i],list_of_comp_sessionIds[i],actions_in_reference_sessionId=ref_action_file_data[0], actions_in_comp_sessionId=comp_action_file_data[0], id_of_action_in_ref_sessionId_action_file=ref_action_file_data[1], id_of_action_in_comp_sessionId_action_file=comp_action_file_data[1])
-                final_list.append(my_results)
-
+                humanfriendly_results=do_comparison(app_name, ref_sessionId_table_name, comp_sessionId_table_name,i,list_of_ref_sessionIds[i],list_of_comp_sessionIds[i],actions_in_reference_sessionId=ref_action_file_data[0], actions_in_comp_sessionId=comp_action_file_data[0], id_of_action_in_ref_sessionId_action_file=ref_action_file_data[1], id_of_action_in_comp_sessionId_action_file=comp_action_file_data[1])
+                final_list.append(humanfriendly_results)
 
             """ This command prints results in a table by making use of humanfriendly tabels (https://humanfriendly.readthedocs.org/en/latest/#module-humanfriendly.tables) """
             print(format_pretty_table(final_list, column_names))
+
         # else:
             print "CAUTION! reference sessionId table: ", ref_sessionId_table_name, "and comparable sessionId table:", comp_sessionId_table_name, "Both have different number of rows"
     except:
@@ -166,7 +171,7 @@ from mysql_connection import MysqlPython
 db_name = 'jenkins_core_sessionIDs'
 connect_mysql = MysqlPython('localhost', 'root', '', db_name )
 reference_version_sessionId_table= 'sessionids_1_580'
-compare_version_sessionId_table_list=['sessionids_1_592', 'sessionids_1_594']
+compare_version_sessionId_table_list=['sessionids_1_586','sessionids_1_588' ]
 
 """ Call to main function """
 action_files_dir = "/Users/adityanisal/Dropbox/ActionFiles/"
