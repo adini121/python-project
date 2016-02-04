@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # coding=utf-8
+"""This is a Mysql Python wrapper class, modified fork of : git@github.com:nestordeharo/mysql-python-class.git"""
 
-import MySQLdb, sys
+import MySQLdb
 from collections import OrderedDict
 
 class MysqlPython(object):
@@ -42,40 +43,56 @@ class MysqlPython(object):
         self.__connection.close()
     ## End def __close
 
-    def select_advanced(self, sql, *args):
-        od = OrderedDict(args)
-        query  = sql
-        values = tuple(od.values())
-        self.__open()
-        self.__session.execute(query, values)
-        number_rows = self.__session.rowcount
-        number_columns = len(self.__session.description)
+    def select_major_version_database(self, major_version_database, table):
+        """  """
+        """ Moodle """
+        if major_version_database == 'moodle':
+            query = "SELECT date_created FROM %s" % table
 
-        if number_rows >= 1 and number_columns > 1:
-            result = [item for item in self.__session.fetchall()]
-        else:
-            result = [item[0] for item in self.__session.fetchall()]
+        """ Fireplace """
+        if major_version_database == 'fireplace_mv1': # Select All rows
+            query = "SELECT session_id FROM %s" % table
 
-        self.__close()
-        return result
-    ## End def select_advanced
+        if major_version_database == 'fireplace_mv2':
+            query = "SELECT session_id FROM %s" % table
 
-    def select_basic(self, table):
-        query = "SELECT session_id FROM %s" % table
-        self.__open()
-        self.__session.execute(query)
-        number_rows = self.__session.rowcount
-        number_columns = len(self.__session.description)
+        if major_version_database == 'fireplace_mv3':
+            query = "SELECT session_id FROM %s where id != 3" % table
 
-        if number_rows >= 1 and number_columns > 1:
-            result = [item for item in self.__session.fetchall()]
-        else:
-            result = [item[0] for item in self.__session.fetchall()]
-        return result
+        if major_version_database == 'fireplace_mv4':
+            query = "SELECT session_id FROM %s where id != 3" % table
 
+        """ Jenkins Core """
+        if major_version_database == 'jenkins_core_mv1':
+            query = "SELECT session_id FROM %s where id != 12 and id != 18 and id != 19 and id != 20" % table
 
-    def show_tables(self):
-        query = "SHOW TABLES"
+        if major_version_database == 'jenkins_core_mv2':
+            query = "SELECT session_id FROM %s where id != 3 and id != 6 and id != 7 and id !=16" % table
+
+        if major_version_database == 'jenkins_core_mv3':
+            query = "SELECT session_id FROM %s where id != 16 and id != 17" % table
+
+        if major_version_database == 'jenkins_core_mv4':
+            query = "SELECT session_id FROM %s where id != 17 and id != 18" % table
+
+        """ AMO """
+        if major_version_database == 'amo_mv1': #MV1 starts at 2015_01_01
+            query = "SELECT session_id FROM %s where id != 4 and id != 5 and id != 6 and id != 7" % table
+
+        if major_version_database == 'amo_mv2': #MV2 starts at 2015_04_25
+            query = "SELECT session_id FROM %s where id != 4 and id != 5 and id != 6 and id != 7" % table
+
+        if major_version_database == 'amo_mv3': #MV3 starts at 2015_07_31
+            query = "SELECT session_id FROM %s where id != 4 and id != 5 and id != 6 and id != 7" % table
+
+        """ Bedrock """
+        if major_version_database == 'bedrock_mv2':
+            query = "SELECT session_id FROM %s where id != 30 and id != 57 and id != 58" % table
+
+        if major_version_database == 'bedrock_mv1':
+            query = "SELECT session_id FROM %s where id !=53 and id != 54 and id != 25 and id != 30 and id != 58" % table
+            #added failed ID rows, missing ID rows,
+
         self.__open()
         self.__session.execute(query)
         number_rows = self.__session.rowcount
@@ -87,41 +104,3 @@ class MysqlPython(object):
             result = [item[0] for item in self.__session.fetchall()]
         return result
 ## End class
-
-    def select_moodle(self, table):
-            query = "SELECT date_created FROM %s where id != 4 and id != 5" % table
-            self.__open()
-            self.__session.execute(query)
-            number_rows = self.__session.rowcount
-            number_columns = len(self.__session.description)
-
-            if number_rows >= 1 and number_columns > 1:
-                result = [item for item in self.__session.fetchall()]
-            else:
-                result = [item[0] for item in self.__session.fetchall()]
-            return result
-    def select_jenkins_1_580(self, table):
-        query = "SELECT session_id FROM %s where id != 12 and id != 18 and id != 19 and id != 20" % table
-        self.__open()
-        self.__session.execute(query)
-        number_rows = self.__session.rowcount
-        number_columns = len(self.__session.description)
-
-        if number_rows >= 1 and number_columns > 1:
-            result = [item for item in self.__session.fetchall()]
-        else:
-            result = [item[0] for item in self.__session.fetchall()]
-        return result
-
-    def select_jenkins_1_609(self, table):
-        query = "SELECT session_id FROM %s where id != 16 and id != 17" % table
-        self.__open()
-        self.__session.execute(query)
-        number_rows = self.__session.rowcount
-        number_columns = len(self.__session.description)
-
-        if number_rows >= 1 and number_columns > 1:
-            result = [item for item in self.__session.fetchall()]
-        else:
-            result = [item[0] for item in self.__session.fetchall()]
-        return result

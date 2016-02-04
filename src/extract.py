@@ -69,8 +69,49 @@ class Dummie():
     reg_nextState_id=re.findall('\s\\n\snextStateId\s\:\sSome\((.*?)\)\}',ref_action_file_content, re.DOTALL|re.MULTILINE)
     # print "nextState ids=", reg_nextState_id
 
+    """ Finding by action type """
+    """ 1. sendKeysToElement
+        2. get
+        3. findElement
+        4. setTimeout
+        5. clickElement
+        6. implicitlyWait
+        7. findChildElements
+        8. getElementText
+        9.
+        ...Add more
+    """
+    """ Find Element """
+    find_element= re.findall('\['+ref_sid+'\,\sfindElement\s\{(.*?)\}\]',ref_action_file_content, re.DOTALL|re.MULTILINE)
 
+    """ Get """
 
+    """ Click """
+
+    """ SendKeys """
+
+    """ Wait """
+    """ findElement type :
+        1. css selector
+        2. xpath
+        3. linked text
+        4. partial linked text
+        5. name
+        6. id
+        7. class name
+        ...Add more
+
+    """
+
+    """ Wait type:
+        1. Implicitly wait
+        2. Explicitly wait
+        3. Sleep
+        4. WaitforPagetoLoad
+        5. FluentWait
+        6. setTimeout
+        ...Add more
+    """
     # for line in ref_action_file_content:
     #     matches += reg.findall(line)
     # ref_action_file_content.close()

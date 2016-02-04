@@ -1,5 +1,7 @@
 import re
 from mysql_connection import MysqlPython
+
+
 connect_mysql = MysqlPython('localhost', 'root', '', 'amo_sessionIDs')
 
 def extract_action_file_contents(sessionId, action_file_dir):
