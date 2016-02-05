@@ -11,11 +11,13 @@ class Dummie():
     # def reader(filename):
     reference_action_file= open("/Users/adityanisal/arbit/" + ref_sid + "/" + "actions.txt")
     ref_action_file_content=reference_action_file.read()
+    # print ref_action_file_content
     # comparison_action_file= open("/Users/adityanisal/arbit/42a33d42-9676-466c-9b9f-e632d772ef8f/actions.txt")
     # cmp_action_file_content=comparison_action_file.read()
 
     #### Counting number of actions and matching
     ref_count=ref_action_file_content.count("actions")
+    # print ref_count
     # cmp_count=cmp_action_file_content.count("actions")
     # print "ref content:", ref_action_file_content.count("actions")
     # print "cmp content:", cmp_action_file_content.count("actions")
@@ -33,7 +35,7 @@ class Dummie():
     # ref_regex
 
 
-    matches = []
+    # matches = []
     # reg = re.compile('actions\s\:\s\{(.*?)\}\]\,',re.MULTILINE|re.DOTALL)
     # for line in ref_action_file:
     #     result = reg.search(line)
@@ -55,15 +57,16 @@ class Dummie():
     """For matching inner content - this works"""
     # reg_actions_details=re.findall('\['+'42a33d42-9676-466c-9b9f-e632d772ef8f'+'\,\s(.*?)\s\{',ref_action_file_content, re.DOTALL|re.MULTILINE)
     reg_actions_details=re.findall('\['+ref_sid+'\,\s(.*?)\s\{',ref_action_file_content, re.DOTALL|re.MULTILINE)
-    print "detailed actions=", reg_actions_details
+    print reg_actions_details
+    print "hwhbj", ref_sid
 
     """Inner content and everything """
-    find_element= re.findall('\['+ref_sid+'\,\sfindElement\s\{(.*?)\}\]',ref_action_file_content, re.DOTALL|re.MULTILINE)
+    # find_element= re.findall('\['+ref_sid+'\,\sfindElement\s\{(.*?)\}\]',ref_action_file_content, re.DOTALL|re.MULTILINE)
     # find_element_CSS= re.findall('\['+ref_sid+'\,\sfindElement\s\{using\=(.*?)\,value\=(.*?)\}\]',ref_action_file_content, re.DOTALL|re.MULTILINE)
-    print "find_element=", find_element
+    # print "find_element=", find_element
     ##### THIS WORKS #######
     reg_current_id=re.findall('\}\\n\sid\s\:\s(.*?)\s\\n\snextStateId',ref_action_file_content, re.DOTALL|re.MULTILINE)
-    print "current ids =", reg_current_id
+    # print "current ids =", reg_current_id
 
     ##### THIS WORKS #######
     reg_nextState_id=re.findall('\s\\n\snextStateId\s\:\sSome\((.*?)\)\}',ref_action_file_content, re.DOTALL|re.MULTILINE)
@@ -82,7 +85,8 @@ class Dummie():
         ...Add more
     """
     """ Find Element """
-    find_element= re.findall('\['+ref_sid+'\,\sfindElement\s\{(.*?)\}\]',ref_action_file_content, re.DOTALL|re.MULTILINE)
+    find_element= re.findall('\['+ref_sid+'\,\sget\s\{(.*?)\}\]',ref_action_file_content, re.DOTALL|re.MULTILINE)
+    print "find_element=", find_element
 
     """ Get """
 
