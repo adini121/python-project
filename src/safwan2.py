@@ -6,10 +6,10 @@ dictionary = {
     'findChildElement':'using',
     'findChildElement':'id',
     'findChildElements':'id',
-    'findElement':'using',
-    'get': 'url'}
+    'findElement':'using',}
 
-exception=['clickElement'
+exception=['get'
+    'clickElement'
 	'sendKeysToElement'
     'implicitlyWait'
     'executeScript'
