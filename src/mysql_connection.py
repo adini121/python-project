@@ -49,6 +49,9 @@ class MysqlPython(object):
         if major_version_database == 'moodle':
             query = "SELECT date_created FROM %s" % table
 
+        if major_version_database == 'moodle_reordered':
+            query = "SELECT date_created FROM %s" % table
+
         """ Fireplace """
         if major_version_database == 'fireplace_mv1': # Select All rows
             query = "SELECT session_id FROM %s" % table

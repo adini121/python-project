@@ -182,6 +182,8 @@ jenkins_core_database = 'jenkins_core_sessionIDs'
 jenkins_plugins_database = 'jenkins_plugins_sessionIDs'
 # ====  Moodle ====
 moodle_database = 'moodle_sessionIDs'
+# === Moodle Reordered ===
+moodle_reordered_database = 'reordered_moodle_sessionIDs'
 # ====  Fireplace (Mozilla Marketplace) ====
 fireplace_database = 'fireplace_sessionIDs'
 # ====  AMO (Addons Mozilla) ====
@@ -213,6 +215,9 @@ jenkins_core_MV4_compare_version_sessionId_table_list = ['sessionids_1_625_1','s
 moodle_reference_version_sessionId_table= 'sessionids_230_beta_fin'
 moodle_compare_version_sessionId_table_list=['sessionids_230_retest','sessionids_231_fin','sessionids_232_fin','sessionids_233_fin','sessionids_234_retest','sessionids_236_fin','sessionids_237_fin','sessionids_238_fin','sessionids_239_fin','sessionids_2310_fin','sessionids_2311_fin']
 
+# Moodle Reordered
+moodle_reordered_reference_version_sessionId_table='sessionids_230_beta_reordered'
+moodle_reordered_comparable_version_sessionId_table_list=['sessionids_230_rc1_reordered','sessionids_230_reordered','sessionids_231_reordered','sessionids_232_reordered','sessionids_233_reordered','sessionids_234_reordered','sessionids_235_reordered','sessionids_236_reordered','sessionids_237_reordered','sessionids_238_reordered','sessionids_239_reordered','sessionids_2310_reordered','sessionids_2311_reordered']
 ############################################## Fireplace (Mozilla Marketplace) ##############################################
 # Fireplace MV1
 fireplace_mv1_reference_version_sessionId_table='sessionids_mv1_2014_12_16'
@@ -260,9 +265,9 @@ bedrock_mv2_compare_version_sessionId_table_list=''
 """
 
 """ !!! Input parameters: Select DATABASE name !!! """
-connect_mysql = MysqlPython('localhost', 'root', '', bedrock_database)
+connect_mysql = MysqlPython('localhost', 'root', '', moodle_reordered_database)
 action_files_dir = "/Users/adityanisal/Dropbox/ActionFiles/"
 
 """ !!! Input parameters: Select reference table and comparable table name, APP Name !!! """
-for table in bedrock_mv1_compare_version_sessionId_table_list:
-    main('bedrock_mv1', bedrock_mv1_reference_version_sessionId_table, table, action_files_dir, 'bedrock')
+for table in moodle_reordered_comparable_version_sessionId_table_list:
+    main('moodle_reordered', moodle_reordered_reference_version_sessionId_table, table, action_files_dir, 'moodle_reordered')
