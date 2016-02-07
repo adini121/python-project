@@ -16,7 +16,9 @@ exception=['clickElement',
     'executeScript',
     'getPageSource',
      'setTimeout',
-    'getElementText', 'get']
+    'getElementText',
+    'get',
+    'getTitle']
 
 my_list = []
 except_list = []
