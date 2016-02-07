@@ -3,7 +3,6 @@
 # findElement_xpath=re.findall('findElement\s\{using\=\"(.*?)\"', regex_str, re.DOTALL | re.MULTILINE)
 # print findElement_xpath
 safwan = """
-Session c03ad187-87d7-4163-8cb7-4592b526d2a6 {
  actions : {
 [c03ad187-87d7-4163-8cb7-4592b526d2a6, setWindowSize {windowHandle="current", width=1024, height=768}],
 [c03ad187-87d7-4163-8cb7-4592b526d2a6, setTimeout {type="page load", ms=30000}],
