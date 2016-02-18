@@ -27,8 +27,8 @@ def return_raw_actions(file_contents):
     return actions_list
     # print actions_list
 
-def count_by_action_type(raw_actions_list):
-    data = raw_actions_list
+def count_by_action_type(file_contents):
+    data = return_raw_actions(file_contents)
     # print data
 
     findElementsDictionary = {
@@ -73,8 +73,8 @@ def main(major_version_database, ref_sessionId_table_name):
         for i in rows_in_ref_sessionId_table:
             ref_action_file_contents = extract_action_file_contents(list_of_ref_sessionIds[i], action_files_dir)
             print  "========================================================================================="
-            ref_actions_list = return_raw_actions(ref_action_file_contents)
-            findElement_count_dict,otherActions_count_dict=count_by_action_type(ref_actions_list)
+            # ref_actions_list = return_raw_actions(ref_action_file_contents)
+            findElement_count_dict,otherActions_count_dict=count_by_action_type(ref_action_file_contents)
             print "Test Number: ",i, "(SessionID:",list_of_ref_sessionIds[i],")"
             print "___________________________________________"
             for key, value in findElement_count_dict.items():
