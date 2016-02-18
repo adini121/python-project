@@ -64,6 +64,7 @@ data1 = """
 [a2da1608-5e22-4a2c-b3ce-72b8b7e10141, findElement {using="css selector", value="#footer a[href*=\"privacy\"]"}]
 [a2da1608-5e22-4a2c-b3ce-72b8b7e10141, isElementDisplayed {sessionId=a076598e-3ba0-4ac3-914a-08ce8b209e99, id=39}]
 [a2da1608-5e22-4a2c-b3ce-72b8b7e10141, findElement {using="css selector", value=".abuse > a"}]
+[e76fe865-c7d6-45f2-aba9-5132b94915ae, findChildElements {using="css selector", id="5", value="wqd.KABOOM"}]
 [a2da1608-5e22-4a2c-b3ce-72b8b7e10141, isElementDisplayed {sessionId=a076598e-3ba0-4ac3-914a-08ce8b209e99, id=40}]"""
 
 data2 = """
@@ -94,12 +95,13 @@ data2 = """
 [e76fe865-c7d6-45f2-aba9-5132b94915ae, submitElement {id="4"}]
 [e76fe865-c7d6-45f2-aba9-5132b94915ae, findElements {using="css selector", value="#search-results .item.result.app-list-app"}]
 [e76fe865-c7d6-45f2-aba9-5132b94915ae, findElements {using="css selector", value="#search-results .item.result.app-list-app"}]
-[e76fe865-c7d6-45f2-aba9-5132b94915ae, findChildElement {using="css selector", id="5", value=".info > h3"}]
+[e76fe865-c7d6-45f2-aba9-5132b94915ae, findChildElement {using="css selector", id="5", value=".KABOOM"}]
+[e76fe865-c7d6-45f2-aba9-5132b94915ae, findChildElements {using="css selector", id="5", value=".KABOOM"}]
 [e76fe865-c7d6-45f2-aba9-5132b94915ae, getElementText {sessionId=03c4b22e-12ea-47e8-aacf-967a631b8ff2, id=23}]
 [e76fe865-c7d6-45f2-aba9-5132b94915ae, findElements {using="css selector", value="#search-results .item.result.app-list-app"}]
-[e76fe865-c7d6-45f2-aba9-5132b94915ae, findChildElement {using="css selector", id="5", value=".info > h3"}]
+[e76fe865-c7d6-45f2-aba9-5132b94915ae, findChildElement {using="css selector", id="5", value=".KABOOM"}]
 [e76fe865-c7d6-45f2-aba9-5132b94915ae, getElementText {sessionId=03c4b22e-12ea-47e8-aacf-967a631b8ff2, id=23}]
-[e76fe865-c7d6-45f2-aba9-5132b94915ae, findChildElement {using="css selector", id="5", value=".info > h3"}]
+[e76fe865-c7d6-45f2-aba9-5132b94915ae, findChildElement {using="css selector", id="5", value=".KABOOM"}]
 [e76fe865-c7d6-45f2-aba9-5132b94915ae, clickElement {id="23"}]
 [e76fe865-c7d6-45f2-aba9-5132b94915ae, implicitlyWait {ms=0.0}]
 [e76fe865-c7d6-45f2-aba9-5132b94915ae, findElements {using="css selector", value=".loading"}]
@@ -202,20 +204,20 @@ def print_and_process(data1, data2):
                     if list1[i] in list2:
                         tuple = (element, list1[i][0])
                         reorder_list.append(tuple)
-                        print list1[i], i, "ordering has been changed to", list2.index(list1[i]), "in second one"
+                        # print list1[i], i, "ordering has been changed to", list2.index(list1[i]), "in second one"
 
                     else:
                         tuple = (element, list1[i][0])
                         changed_list.append(tuple)
-                        print list1[i], "2nd", list2[i]
+                        # print list1[i], "2nd", list2[i]
             except IndexError:
                 if list1[i] in list2:
                     tuple = (element, list1[i][0])
                     reorder_list.append(tuple)
-                    print list1[i], i, "ordering has been changed to", list2.index(list1[i]), "in second one"
+                    # print list1[i], i, "ordering has been changed to", list2.index(list1[i]), "in second one"
                 else:
-                    print list1[i], "not present in second data"
-
+                    # print list1[i], "not present in second data"
+                    print ""
         list1_count = Counter(list1_number)
         list2_count = Counter(list2_number)
         for obj in list1_count:
@@ -323,6 +325,7 @@ compare_implicitly_wait(implicitly_wait1, implicitly_wait2)
 #for key, value in reorder.items():
  #   print "reorder", key, value
 """ PRINT FINAL OUTPUTS """
+"""
 print "\n"
 print "======================================== REORDERED ================================================================="
 for key in reorder:
@@ -349,7 +352,72 @@ for key in deleted:
         if deleted[key][value]!="0":
             print "deleted" ,key ,"using" ,value, ":" ,deleted[key][value]
 
-# print "======================================= lenghts =============================================================="
+# print "======================================= lenghts =============================================================="""""
+
+implicit_wait_diff=compare_implicitly_wait(implicitly_wait1, implicitly_wait2)
+print "implicitWait diff: ",implicit_wait_diff
+print "\n"
+# print "======================================== REORDERED ================================================================="
+# for key in reorder:
+#     for value in reorder[key]:
+#         if changed[key][value]!="0": #checks if not equal to zero
+#             print "reordered" ,key ,"using" ,value, ":" ,reorder[key][value]
+
+print "======================================= CHANGED =============================================================="
+child_dict={}
+Element_dict={}
+Element_list=[]
+for key in changed:
+    # print key.title()
+    key_title_list=[]
+    key_title_list.append(key.title())
+    # print key_title_list
+    for value in changed[key]:
+        print "changed" ,key ,"using" ,value, ":" ,changed[key][value]
+        # Element_list.append("changed" ,key ,"using" ,value, ":" ,changed[key][value])
+        # print "##################################################################################################################################################################"
+        # print Element_list
+        # print "777777777777777777"
+
+        # if changed["findElement"][value]:
+
+        # if key.startswith("findChild"):
+        #     child_dict[value]=changed[key][value]
+
+        # if key.endswith("findElement"):
+        #     Element_dict[value]=changed[key][value]
+
+            # print "changedChildren:", key, "with", value, ": :",changed[key][value]
+
+
+        # if changed[key][value]!="0":
+        #     print "changed" ,key ,"using" ,value, ":" ,changed[key][value]
+
+print "changed dict:", changed
+# print "Elements dict:", Element_dict
+
+# print "\n"
+print "Changed_children_dict:",child_dict
+print "Element_dict:", Element_dict
+# for key, val in child_dict.items():
+#     val_list=[]
+#     print key, "->", val
+    # val_list.append(val)
+    # for val_items in val_list:
+    #     final_count=val_list
+    # print "val_list:", sum(val_list)
+#     print "changed children elements total:"
+# print "======================================= ADDED =============================================================="
+# for key in added:
+#     for value in added[key]:
+#         # if added[key][value]!="0":
+#         print "added" ,key ,"using" ,value, ":" ,added[key][value]
+#
+# print "======================================= DELETED =============================================================="
+# for key in deleted:
+#     for value in deleted[key]:
+#         if deleted[key][value]!="0":
+#             print "deleted" ,key ,"using" ,value, ":" ,deleted[key][value]
 """
 IGNORE-THIS-USE-LATER-IF-NEEDED
 def process_data(data):

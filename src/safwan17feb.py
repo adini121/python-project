@@ -87,6 +87,7 @@ file_contents="""Session 57e4c7b9-c9bb-4656-9323-7d91bb6cd394 {
 }
  id : 55aa2799-e71a-477e-9605-3de6f4e62c2f
  nextStateId : None}"""
+
 def return_raw_actions(file_contents):
 
     actions_list = []
@@ -116,10 +117,10 @@ def count_by_action_type(file_contents):
     other_actions=['clickElement',
     'sendKeysToElement',
     'implicitlyWait',
-    'executeScript',
-    'getPageSource',
-    'setTimeout',
-    'getElementText',
+    # 'executeScript',
+    # 'getPageSource',
+    # 'setTimeout',
+    # 'getElementText',
     'get']
 
     findElement_list= []
@@ -137,14 +138,43 @@ def count_by_action_type(file_contents):
 
     return dict(Counter(findElement_list)), dict(Counter(other_actions_list))
 
-def main( file_contents):
+
+def get_dictionary(file_contents):
+    dictionary = {
+        'findChildElement': {"cssselector": "0", "xpath": "0", "tagname": "0"},
+        'findChildElements': {"cssselector":"0", "xpath":"0", "tagname":"0"},
+        'findElement': {"cssselector":"0", "xpath":"0", "tagname":"0", "name":"0", "classname":"0", "id":"0", "linktext":"0",
+                        "partiallinktext":"0"},
+        'findElements': {"cssselector":"0", "xpath":"0", "tagname": "0"}
+    }
+
+    exception = {'get' : '0',
+     'implicitlyWait' : '0',
+      'clickElement': '0',
+      'sendKeysToElement': '0',
+      # 'executeScript': '0',
+      # 'getPageSource': '0',
+      # 'setTimeout': '0',
+      # 'getElementText': '0',
+      # 'getTitle': '0'
+                 }
 
     findElement_count_dict,otherActions_count_dict=count_by_action_type(file_contents)
-    print "___________________________________________"
     for key, value in findElement_count_dict.items():
-        print key[0], "(", key[1], ") >>", value
+        dictionary[key[0]].update({key[1]: value})
     for key, value in otherActions_count_dict.items():
-        print key, ">>", value
-    print "\n"
+        exception[key] = value
+    return dictionary, exception
 
-main(file_contents)
+
+findElement_count_dict,otherActions_count_dict=get_dictionary(file_contents)
+for key in findElement_count_dict:
+    for value in findElement_count_dict[key]:
+        # if added[key][value]!="0":
+        print "Number of" ,key ,"using" ,value, ":" ,findElement_count_dict[key][value]
+print "####################################################"
+for key, value in otherActions_count_dict.items():
+    print key, ">>", value
+print "\n"
+for key, value in otherActions_count_dict.items():
+    print key, ">>", value

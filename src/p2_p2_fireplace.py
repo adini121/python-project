@@ -97,7 +97,7 @@ def print_and_process(data1, data2):
                     else:
                         tuple = (element, list1[i][0])
                         changed_list.append(tuple)
-                        print "Element ",list1[i], " ---Changed to -->", list2[i]
+                        # print "Element ",list1[i], " ---Changed to -->", list2[i]
             except IndexError:
                 if list1[i] in list2:
                     tuple = (element, list1[i][0])
@@ -105,7 +105,7 @@ def print_and_process(data1, data2):
                     # print list1[i], i, "ordering has been changed to", list2.index(list1[i]), "in second one"
                 else:
                     print ""
-                    print list1[i], "not present in second data"
+                    # print list1[i], "not present in second data"
         # print list1
         # print "@@@@@@@@@@@"
         # print list2
@@ -291,15 +291,14 @@ def do_all(data1,data2):
 
     print "======================================= CHANGED =============================================================="
     child_dict={}
-    findElement_dict={}
-    findElements_dict={}
+    Element_dict={}
     for key in changed:
         # print key.title()
         key_title_list=[]
         key_title_list.append(key.title())
         # print key_title_list
         for value in changed[key]:
-            # print "changed" ,key ,"using" ,value, ":" ,changed[key][value]
+            print "changed" ,key ,"using" ,value, ":" ,changed[key][value]
             # print "777777777777777777"
             if key.startswith("findChild"):
                 child_dict[value]=changed[key][value]
@@ -307,11 +306,16 @@ def do_all(data1,data2):
             #     findElement_dict[value]=changed[key][value]
 
                 # print "changedChildren:", key, "with", value, ": :",changed[key][value]
-            if changed[key][value]!="0":
-                print "changed" ,key ,"using" ,value, ":" ,changed[key][value]
+
+
+            # if changed[key][value]!="0":
+            #     print "changed" ,key ,"using" ,value, ":" ,changed[key][value]
+
+    print "changed dict:", changed
+
     # print "\n"
     print "Changed_children_dict:",child_dict
-    # print "findElement_dict:", findElement_dict
+    print "Element_dict:", Element_dict
     # for key, val in child_dict.items():
     #     val_list=[]
     #     print key, "->", val
