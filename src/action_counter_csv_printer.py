@@ -138,7 +138,7 @@ def write_in_csv(content_list,out_file_name):
               'sendKeysToElement', 'implicitlyWait', 'get','clickElement']
     # dictionary= get_dictionary(file_contents)
     try:
-        with open('/Users/adityanisal/Dropbox/ExtractedResultFiles/'+out_file_name+'.csv', 'w') as csvfile:
+        with open('/Users/adityanisal/Dropbox/ExtractedResultFiles/CSV/'+out_file_name+'.csv', 'w') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=fields)
             writer.writeheader()
             for dictionary in content_list:
@@ -240,10 +240,10 @@ bedrock_mv1_reference_version_sessionId_table='sessionids_mv1_2015_01_13'
 # action_files_dir = "/Users/adityanisal/Dropbox/ActionFiles/"
 #
 # main('amo_mv1', fireplace_mv4_reference_version_sessionId_table)
-connect_mysql = MysqlPython('localhost', 'root', '', fireplace_database)
+connect_mysql = MysqlPython('localhost', 'root', '', amo_database)
 action_files_dir = "/Users/adityanisal/Dropbox/ActionFiles/"
 # content_list =
 # main('fireplace_mv1', fireplace_mv4_reference_version_sessionId_table)
 
-content_list = get_all_processd_contents('fireplace_mv1', fireplace_mv1_reference_version_sessionId_table)
-write_in_csv(content_list,"fireplace-mv1")
+content_list = get_all_processd_contents('amo_mv3', amo_mv3_reference_version_sessionId_table)
+write_in_csv(content_list,"amo-mv3")
