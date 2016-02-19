@@ -1,5 +1,7 @@
-from collections import Counter
 import csv
+
+from collections import Counter
+
 from mysql_connection import MysqlPython
 
 def extract_action_file_contents(sessionId, action_file_dir):
@@ -77,8 +79,11 @@ def get_dictionary(file_contents):
         dictionary[key[0]].update({key[1]: value})
     for key, value in otherActions_count_dict.items():
         exception[key] = value
+    # for merging elements and element
     dictionary = merge_dictionary(dictionary)
-    return dictionary, exception
+    # for getting processed data for the csv
+    dictionary = process_data_for_csv(dictionary, exception)
+    return dictionary
 
 """I will be back in 5 mins and knock you here. >> Ok
 """
@@ -111,9 +116,6 @@ def merge_dictionary(contents):
 
 
 def process_data_for_csv(elementdict, exception):
-    fields = ['Childcssselector', 'Childxpath', 'Childtagname', 'xpath', 'partiallinktext',
-              'classname', 'linktext', 'name', 'cssselector', 'tagname', 'id',
-              'sendKeysToElement', 'implicitlyWait', 'get','clickElement']
     dictionary = {}
     for key, value in elementdict.items():
         # proces the data according to column name
@@ -128,19 +130,25 @@ def process_data_for_csv(elementdict, exception):
     # For exception one
     dictionary.update(exception)
 
-    return fields, dictionary
+    return dictionary
 
-def write_in_csv(file_contents):
-    dictionary, exception = get_dictionary(file_contents)
-    fields, dictionary = process_data_for_csv(dictionary, exception)
-    with open('csv_output.csv', 'a+') as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=fields)
-        writer.writeheader()
-        writer.writerow(dictionary)
+def write_in_csv(content_list,out_file_name):
+    fields = ['Childcssselector', 'Childxpath', 'Childtagname', 'xpath', 'partiallinktext',
+              'classname', 'linktext', 'name', 'cssselector', 'tagname', 'id',
+              'sendKeysToElement', 'implicitlyWait', 'get','clickElement']
+    # dictionary= get_dictionary(file_contents)
+    try:
+        with open('/Users/adityanisal/Dropbox/ExtractedResultFiles/'+out_file_name+'.csv', 'w') as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=fields)
+            writer.writeheader()
+            for dictionary in content_list:
+                writer.writerow(dictionary)
+            print "--success--"
+    except IOError:
+        "==================== ERROR: Filewrite error ===================="
 
-# write_in_csv(file_contents
 
-def main(major_version_database, ref_sessionId_table_name):
+def get_all_processd_contents(major_version_database, ref_sessionId_table_name):
     action_files_dir = "/Users/adityanisal/Dropbox/ActionFiles/"
     try:
         list_of_ref_sessionIds= connect_mysql.select_major_version_database(major_version_database, ref_sessionId_table_name)
@@ -148,23 +156,18 @@ def main(major_version_database, ref_sessionId_table_name):
         print "ERROR : Reference table does not exist :", ref_sessionId_table_name
 
     try:
+        all_contents = []
         rows_in_ref_sessionId_table = range(len(list_of_ref_sessionIds))
         for i in rows_in_ref_sessionId_table:
             ref_action_file_contents = extract_action_file_contents(list_of_ref_sessionIds[i], action_files_dir)
-            write_in_csv(ref_action_file_contents)
-            # print  "========================================================================================="
-            # # ref_actions_list = return_raw_actions(ref_action_file_contents)
-            # findElement_count_dict,otherActions_count_dict=count_by_action_type(ref_action_file_contents)
-            # print "Test Number: ",i, "(SessionID:",list_of_ref_sessionIds[i],")"
-            # print "___________________________________________"
-            # for key, value in findElement_count_dict.items():
-            #     print key[0], "(", key[1], ") >>", value
-            # for key, value in otherActions_count_dict.items():
-            #     print key, ">>", value
-            # print "\n"
+            dictionary= get_dictionary(ref_action_file_contents)
+            all_contents.append(dictionary)
+        return all_contents
 
     except:
         print "#################################################### TABLE ERROR: Please check if given reference table exists: ", ref_sessionId_table_name
+
+
 
 """ SesionId database names for each app """
 # === Jenkins core ====
@@ -239,5 +242,8 @@ bedrock_mv1_reference_version_sessionId_table='sessionids_mv1_2015_01_13'
 # main('amo_mv1', fireplace_mv4_reference_version_sessionId_table)
 connect_mysql = MysqlPython('localhost', 'root', '', fireplace_database)
 action_files_dir = "/Users/adityanisal/Dropbox/ActionFiles/"
+# content_list =
+# main('fireplace_mv1', fireplace_mv4_reference_version_sessionId_table)
 
-main('fireplace_mv1', fireplace_mv4_reference_version_sessionId_table)
+content_list = get_all_processd_contents('fireplace_mv1', fireplace_mv1_reference_version_sessionId_table)
+write_in_csv(content_list,"fireplace-mv1")
