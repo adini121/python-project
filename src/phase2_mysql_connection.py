@@ -80,7 +80,7 @@ class Phase2MysqlPython(object):
         #     query = "SELECT session_id FROM %s where id != 4 and id != 5 and id != 6 and id != 7" % table
         #
         # if phase2_major_version_database == 'amo_mv3': #MV3 starts at 2015_07_31
-        #     query = "SELECT session_id FROM %s where id != 4 and id != 5 and id != 6 and id != 7" % table
+        #     query = "SELECT session_id FROM %s where id != 3 and id != 4 and id != 5 and id != 6" % table
         #
         # """ Bedrock """
         # if phase2_major_version_database == 'bedrock_mv2':
