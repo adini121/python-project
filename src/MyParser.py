@@ -247,10 +247,10 @@ amo_mv3_compare_version_sessionId_table_list=['sessionids_2015_08_11','sessionid
 #Bedrock MV1
 bedrock_mv1_reference_version_sessionId_table='sessionids_mv1_2015_01_13'
 bedrock_mv1_compare_version_sessionId_table_list=['sessionids_mv1_2015_01_30','sessionids_mv1_2015_02_13','sessionids_mv1_2015_02_26','sessionids_mv1_2015_03_12','sessionids_mv1_2015_03_30','sessionids_mv1_2015_04_10','sessionids_mv1_2015_04_20']
-
+bedrock_mv1_compare_version_sessionId_table_list_new=['sessionids_mv1_2015_01_21','sessionids_mv1_2015_03_21','sessionids_mv1_2015_05_11']
 #Bedrock MV2
-bedrock_mv2_reference_version_sessionId_table=''
-bedrock_mv2_compare_version_sessionId_table_list=''
+bedrock_mv2_reference_version_sessionId_table='sessionids_mv2_2015_06_08'
+bedrock_mv2_compare_version_sessionId_table_list=['sessionids_mv2_2015_06_15','sessionids_mv2_2015_07_01','sessionids_mv2_2015_07_15','sessionids_mv2_2015_07_31','sessionids_mv2_2015_08_14','sessionids_mv2_2015_09_16','sessionids_mv2_2015_10_01','sessionids_mv2_2015_10_15','sessionids_mv2_2015_10_26']
 """ Call to main function """
 """ Change app name to reflect proper DB name """
 """ Change reference and comparable table names """
@@ -264,5 +264,5 @@ connect_mysql = MysqlPython('localhost', 'root', '', bedrock_database)
 action_files_dir = "/Users/adityanisal/Dropbox/ActionFiles/"
 
 """ !!! Input parameters: Select reference table and comparable table name, APP Name !!! """
-for table in bedrock_mv1_compare_version_sessionId_table_list:
-    main('bedrock_mv1', bedrock_mv1_reference_version_sessionId_table, table, action_files_dir, 'bedrock')
+for table in bedrock_mv2_compare_version_sessionId_table_list:
+    main('bedrock_mv2', bedrock_mv2_reference_version_sessionId_table, table, action_files_dir, 'bedrock')

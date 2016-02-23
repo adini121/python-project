@@ -240,10 +240,10 @@ bedrock_mv1_reference_version_sessionId_table='sessionids_mv1_2015_01_13'
 # action_files_dir = "/Users/adityanisal/Dropbox/ActionFiles/"
 #
 # main('amo_mv1', fireplace_mv4_reference_version_sessionId_table)
-connect_mysql = MysqlPython('localhost', 'root', '', amo_database)
+connect_mysql = MysqlPython('localhost', 'root', '', fireplace_database)
 action_files_dir = "/Users/adityanisal/Dropbox/ActionFiles/"
 # content_list =
 # main('fireplace_mv1', fireplace_mv4_reference_version_sessionId_table)
 
-content_list = get_all_processd_contents('amo_mv3', amo_mv3_reference_version_sessionId_table)
-write_in_csv(content_list,"amo-mv3")
+content_list = get_all_processd_contents('fireplace_mv3', fireplace_mv3_reference_version_sessionId_table)
+write_in_csv(content_list,"fireplace-mv3")

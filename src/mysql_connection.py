@@ -87,10 +87,10 @@ class MysqlPython(object):
 
         """ Bedrock """
         if major_version_database == 'bedrock_mv2':
-            query = "SELECT session_id FROM %s where id != 30 and id != 57 and id != 58" % table
+            query = "SELECT session_id FROM %s where id != 17 and id != 24 and id != 34 and id != 22 and id != 30 and id != 57 and id != 58" % table
 
         if major_version_database == 'bedrock_mv1':
-            query = "SELECT session_id FROM %s where id !=53 and id != 54 and id != 25 and id != 30 and id != 58" % table
+            query = "SELECT session_id FROM %s where id != 22 and id !=53 and id != 54 and id != 25 and id != 30 and id != 58" % table
             #added failed ID rows, missing ID rows,
 
         self.__open()
