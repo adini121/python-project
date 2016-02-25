@@ -85,8 +85,6 @@ def get_dictionary(file_contents):
     dictionary = process_data_for_csv(dictionary, exception)
     return dictionary
 
-"""I will be back in 5 mins and knock you here. >> Ok
-"""
 def merge_dictionary(contents):
     dictionary = {
     'Element': {"css selector":"0", "xpath":"0", "tag name":"0", "name":"0", "class name":"0", "id":"0", "link text":"0",
@@ -240,10 +238,10 @@ bedrock_mv1_reference_version_sessionId_table='sessionids_mv1_2015_01_13'
 # action_files_dir = "/Users/adityanisal/Dropbox/ActionFiles/"
 #
 # main('amo_mv1', fireplace_mv4_reference_version_sessionId_table)
-connect_mysql = MysqlPython('localhost', 'root', '', fireplace_database)
+connect_mysql = MysqlPython('localhost', 'root', '', amo_database)
 action_files_dir = "/Users/adityanisal/Dropbox/ActionFiles/"
 # content_list =
 # main('fireplace_mv1', fireplace_mv4_reference_version_sessionId_table)
 
-content_list = get_all_processd_contents('fireplace_mv3', fireplace_mv3_reference_version_sessionId_table)
-write_in_csv(content_list,"fireplace-mv3")
+content_list = get_all_processd_contents('amo_mv3', amo_mv3_reference_version_sessionId_table)
+write_in_csv(content_list,"amomv325feb")
