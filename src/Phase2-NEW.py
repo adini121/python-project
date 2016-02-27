@@ -71,6 +71,7 @@ def print_and_process(data1, data2):
     added_list = []
     for element in data1:
         list1 = list(set_(data1[element]))
+        print list1
         list2 = list(set_(data2[element]))
         list1_number = [x[0] for x in list1]
         list2_number = [x[0] for x in list2]
@@ -267,18 +268,22 @@ def get_all_processed_contents(major_version_database, ref_sessionId_table_name,
     try:
         if len(list_of_ref_sessionIds) == len(list_of_comp_sessionIds):
             all_contents = []
+            all_ref_action_file_data = ''
+            all_comp_action_file_data = ''
             rows_in_ref_sessionId_table = range(len(list_of_ref_sessionIds))
             for i in rows_in_ref_sessionId_table:
                 ref_action_file_data = extract_p2_action_file_contents(list_of_ref_sessionIds[i])
                 comp_action_file_data = extract_p2_action_file_contents(list_of_comp_sessionIds[i])
                 print "******************************************** Test #: ",i, "******************************************** \n"
                 print "SessionID ", list_of_ref_sessionIds[i], " VS ", list_of_comp_sessionIds[i], "\n"
-                all_dictionary = compare_all(ref_action_file_data, comp_action_file_data)
-                processed_data_csv = process_data_for_csv(all_dictionary)
-                all_contents.append(processed_data_csv)
-                print "\n"
-                do_all(ref_action_file_data,comp_action_file_data)
-                print "\n"
+                all_ref_action_file_data = all_ref_action_file_data + '\n' + ref_action_file_data
+                all_comp_action_file_data = all_comp_action_file_data + '\n' + comp_action_file_data
+            all_dictionary = compare_all(all_ref_action_file_data, all_comp_action_file_data)
+            processed_data_csv = process_data_for_csv(all_dictionary)
+            all_contents.append(processed_data_csv)
+            print "\n"
+            do_all(ref_action_file_data,comp_action_file_data)
+            print "\n"
             return all_contents,csv_filename
 
     except:

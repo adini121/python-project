@@ -265,21 +265,25 @@ def get_all_processed_contents(major_version_database, ref_sessionId_table_name,
         print "ERROR : Comparable table does not exist :", comp_sessionId_table_name
     csv_filename=major_version_database[:-4]+'/' +major_version_database[:-4] + '_' + ref_sessionId_table_name[11:] + '_III_' + comp_sessionId_table_name[11:]
     try:
-        if len(list_of_ref_sessionIds) == len(list_of_comp_sessionIds):
-            all_contents = []
-            rows_in_ref_sessionId_table = range(len(list_of_ref_sessionIds))
-            for i in rows_in_ref_sessionId_table:
-                ref_action_file_data = extract_p2_action_file_contents(list_of_ref_sessionIds[i])
-                comp_action_file_data = extract_p2_action_file_contents(list_of_comp_sessionIds[i])
-                print "******************************************** Test #: ",i, "******************************************** \n"
-                print "SessionID ", list_of_ref_sessionIds[i], " VS ", list_of_comp_sessionIds[i], "\n"
-                all_dictionary = compare_all(ref_action_file_data, comp_action_file_data)
-                processed_data_csv = process_data_for_csv(all_dictionary)
-                all_contents.append(processed_data_csv)
-                print "\n"
-                do_all(ref_action_file_data,comp_action_file_data)
-                print "\n"
-            return all_contents,csv_filename
+        # if len(list_of_ref_sessionIds) == len(list_of_comp_sessionIds):
+        all_contents = []
+        all_ref_action_file_data = ''
+        all_comp_action_file_data = ''
+        rows_in_ref_sessionId_table = range(len(list_of_ref_sessionIds))
+        for i in rows_in_ref_sessionId_table:
+            ref_action_file_data = extract_p2_action_file_contents(list_of_ref_sessionIds[i])
+            comp_action_file_data = extract_p2_action_file_contents(list_of_comp_sessionIds[i])
+            print "******************************************** Test #: ",i, "******************************************** \n"
+            print "SessionID ", list_of_ref_sessionIds[i], " VS ", list_of_comp_sessionIds[i], "\n"
+            all_ref_action_file_data = all_ref_action_file_data + '\n' + ref_action_file_data
+            all_comp_action_file_data = all_comp_action_file_data + '\n' + comp_action_file_data
+        all_dictionary = compare_all(all_ref_action_file_data, all_comp_action_file_data)
+        processed_data_csv = process_data_for_csv(all_dictionary)
+        all_contents.append(processed_data_csv)
+        print "\n"
+        do_all(ref_action_file_data,comp_action_file_data)
+        print "\n"
+        return all_contents,csv_filename
 
     except:
         print "#################################################### TABLE ERROR: Please check if given reference table", ref_sessionId_table_name,  "and comparable table exist", comp_sessionId_table_name, "########################################################"
@@ -303,7 +307,7 @@ def compare_all(data1, data2):
                   "deleted": deleted,
                   "added": added,
                   # "getDiff": get_diff,
-                  # "exception": exception_diff,
+                  "exception": exception_diff,
                   "implicitWaitdiff": implicit_wait_diff
     }
     return dictionary
@@ -318,10 +322,22 @@ def process_data_for_csv(all_dictionary):
                 for element in value:
                     if key != "ChildElement":
                         title = element.replace(' ', '')
-                        dictionary[item + "Element" + title] = value[element]
+                        # Marging changed, added, deleted
+                        if dictionary.get("Element" + title) is None:
+                            dictionary["Element" + title] = value[element]
+                        else:
+                            past_value = int(dictionary["Element" + title])
+                            dictionary["Element" + title] = past_value + int(value[element])
+
                     if key == "ChildElement":
                         title = element.replace(' ', '')
-                        dictionary[item + "ChildElement" + title] = value[element]
+                        # Marging changed, added, deleted
+                        if dictionary.get("ChildElement" + title) is None:
+                            dictionary["ChildElement" + title] = value[element]
+                        else:
+                            past_value = int(dictionary["ChildElement" + title])
+                            dictionary["ChildElement" + title] = past_value + int(value[element])
+
         if item == "exception":
             for key, value in elementdict.items():
                 dictionary.update({key+"Diff": value})
@@ -341,52 +357,30 @@ def write_in_csv(content_list, fields,csv_filename):
                 writer.writerow(dictionary)
     except IOError:
         print "------------ERROR in printing CSV------------"
-fields = [
-    "changedElementxpath",
-    "changedElementpartiallinktext",
-    "changedElementclassname",
-    "changedElementlinktext",
-    "changedElementname",
-    "changedElementcssselector",
-    "changedElementtagname",
-    "changedElementid",
-    "changedChildElementcssselector",
-    "changedChildElementxpath",
-    "changedChildElementtagname",
-    "addedElementxpath",
-    "addedElementpartiallinktext",
-    "addedElementclassname",
-    "addedElementlinktext",
-    "addedElementname",
-    "addedElementcssselector",
-    "addedElementtagname",
-    "addedElementid",
-    "addedChildElementcssselector",
-    "addedChildElementxpath",
-    "addedChildElementtagname",
-    "deletedElementxpath",
-    "deletedElementpartiallinktext",
-    "deletedElementclassname",
-    "deletedElementlinktext",
-    "deletedElementname",
-    "deletedElementcssselector",
-    "deletedElementtagname",
-    "deletedElementid",
-    "deletedChildElementcssselector",
-    "deletedChildElementxpath",
-    "deletedChildElementtagname",
+fields = fields = [
+    "Elementxpath",
+    "Elementpartiallinktext",
+    "Elementclassname",
+    "Elementlinktext",
+    "Elementname",
+    "Elementcssselector",
+    "Elementtagname",
+    "Elementid",
+    "ChildElementcssselector",
+    "ChildElementxpath",
+    "ChildElementtagname",
     # "getDiff",
-    # "sendKeysToElementDiff",
-    # "clickElementDiff",
+    "sendKeysToElementDiff",
+    "clickElementDiff",
     "implicitWaitdiff",
-    #"setTimeoutDiff"
+    # "setTimeoutDiff"
     ]
 
 
-p2_fireplace_database='backup_phase_two_fireplace_sids'
-fireplace_mv1_reference_version_sessionId_table='sessionids_mv2_p2_2015_04_14_2'
-fireplace_mv1_compare_version_sessionId_table='sessionids_mv2_p2_2015_04_28'
+p2_fireplace_database='backup_phase_two_amo_sids'
+fireplace_mv1_reference_version_sessionId_table='sessionids_mv2_p2_2015_02_10'
+fireplace_mv1_compare_version_sessionId_table='sessionids_mv2_p2_2015_03_10'
 
 connect_mysql = Phase2MysqlPython('localhost', 'root', '', p2_fireplace_database)
 content_list,csv_filename = get_all_processed_contents('fireplace_mv1',fireplace_mv1_reference_version_sessionId_table,fireplace_mv1_compare_version_sessionId_table)
-write_in_csv(fields=fields, content_list=content_list,csv_filename=csv_filename)
+write_in_csv(fields=fields, content_list=content_list,csv_filename="FIREPLACE-TEST")
