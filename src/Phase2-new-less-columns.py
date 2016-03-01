@@ -211,18 +211,18 @@ def do_all(data1,data2):
 
     print "Changed_children_dict:",child_dict
     print "Element_dict:", Element_dict
-
-    print "======================================= ADDED =============================================================="
-    for key in added:
-        for value in added[key]:
-            if added[key][value]!="0":
-                print "added" ,key ,"using" ,value, ":" ,added[key][value]
-
-    print "======================================= DELETED =============================================================="
-    for key in deleted:
-        for value in deleted[key]:
-            if deleted[key][value]!="0":
-                print "deleted" ,key ,"using" ,value, ":" ,deleted[key][value]
+    #
+    # print "======================================= ADDED =============================================================="
+    # for key in added:
+    #     for value in added[key]:
+    #         if added[key][value]!="0":
+    #             print "added" ,key ,"using" ,value, ":" ,added[key][value]
+    #
+    # print "======================================= DELETED =============================================================="
+    # for key in deleted:
+    #     for value in deleted[key]:
+    #         if deleted[key][value]!="0":
+    #             print "deleted" ,key ,"using" ,value, ":" ,deleted[key][value]
 
 
 def merge_dictionary(contents):
@@ -249,7 +249,7 @@ def merge_dictionary(contents):
                     dictionary["ChildElement"][element] = int(one) + int(two)
                 except KeyError:
                     dictionary["ChildElement"][element] = contents["findChildElement"][element]
-    # print dictionary
+
     return dictionary
 
 def get_all_processed_contents(major_version_database, ref_sessionId_table_name, comp_sessionId_table_name):
@@ -321,32 +321,20 @@ def process_data_for_csv(all_dictionary):
             for key, value in elementdict.items():
                 # proces the data according to column name
                 for element in value:
-                    if key != "ChildElement":
-                        title = element.replace(' ', '')
-                        # Marging changed, added, deleted
-                        if dictionary.get("Element" + title) is None:
-                            dictionary["Element" + title] = value[element]
-                        else:
-                            past_value = int(dictionary["Element" + title])
-                            dictionary["Element" + title] = past_value + int(value[element])
-
-                    if key == "ChildElement":
-                        title = element.replace(' ', '')
-                        # Marging changed, added, deleted
-                        if dictionary.get("ChildElement" + title) is None:
-                            dictionary["ChildElement" + title] = value[element]
-                        else:
-                            past_value = int(dictionary["ChildElement" + title])
-                            dictionary["ChildElement" + title] = past_value + int(value[element])
+                    title = element.replace(' ', '')
+                    # Marging changed, added, deleted
+                    if dictionary.get(title) is None:
+                        dictionary[title] = value[element]
+                    else:
+                        past_value = int(dictionary[title])
+                        dictionary[title] = past_value + int(value[element])
 
         if item == "exception":
             for key, value in elementdict.items():
                 dictionary.update({key+"Diff": value})
         if item in ["getDiff", "implicitWaitdiff"]:
             dictionary[item] = elementdict
-    print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 
-    print dictionary
     return dictionary
 
 
@@ -360,18 +348,15 @@ def write_in_csv(content_list, fields,csv_filename):
                 writer.writerow(dictionary)
     except IOError:
         print "------------ERROR in printing CSV------------"
-fields = fields = [
-    "Elementxpath",
-    "Elementpartiallinktext",
-    "Elementclassname",
-    "Elementlinktext",
-    "Elementname",
-    "Elementcssselector",
-    "Elementtagname",
-    "Elementid",
-    "ChildElementcssselector",
-    "ChildElementxpath",
-    "ChildElementtagname",
+fields = [
+    "xpath",
+    "partiallinktext",
+    "classname",
+    "linktext",
+    "name",
+    "cssselector",
+    "tagname",
+    "id",
     # "getDiff",
     "sendKeysToElementDiff",
     "clickElementDiff",
@@ -380,19 +365,30 @@ fields = fields = [
     ]
 
 
+
 p2_fireplace_database='backup_phase_two_fireplace_sids'
 fireplace_mv1_reference_version_sessionId_table='sessionids_mv2_p2_2015_04_14_2'
 fireplace_mv1_compare_version_sessionId_table='sessionids_mv2_p2_2015_04_28'
 
 
 p2_amo_database='backup_phase_two_amo_sids'
-amo_mv1_reference_version_sessionId_table='sessionids_mv1_2015_09_10'
-amo_mv1_compare_version_sessionId_table='sessionids_mv1_2015_10_08'
+amo_mv1_reference_version_sessionId_table='sessionids_mv1_2015_10_08'
+amo_mv1_compare_version_sessionId_table='sessionids_mv1_2015_10_22_'
 
 p2_bedrock_database='backup_phase_two_bedrock_sids'
 bedrock_mv1_reference_version_sessionId_table='sessionids_mv1_2015_03_30'
 bedrock_mv1_compare_version_sessionId_table='sessionids_mv1_2015_04_10'
 
+
+p2_bedrock_database='backup_phase_two_bedrock_sids'
+bedrock_mv1_reference_version_sessionId_table='sessionids_mv1_2015_03_30'
+bedrock_mv1_compare_version_sessionId_table='sessionids_mv1_2015_04_10'
+
+
+p2_jenkins_database='backup_phase_two_jenkins_sids'
+jenkins_mv1_reference_version_sessionId_table='sessionids_phase2_1_623'
+jenkins_mv1_compare_version_sessionId_table='sessionids_phase2_1_623'
+
 connect_mysql = Phase2MysqlPython('localhost', 'root', '', p2_amo_database)
 content_list,csv_filename = get_all_processed_contents('amo_mv1',amo_mv1_reference_version_sessionId_table,amo_mv1_compare_version_sessionId_table)
-write_in_csv(fields=fields, content_list=content_list,csv_filename="AMO-TEST")
+write_in_csv(fields=fields, content_list=content_list,csv_filename="AMO-TEST-Less-Columns")

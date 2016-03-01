@@ -47,23 +47,17 @@ def count_by_action_type(file_contents):
     findElement_list= []
     other_actions_list = []
     for item in data:
-        items = item.split('{', 1)
+        items = item.split('{')
         action = items[0].replace(' ', '')
         if action in findElementsDictionary and action not in other_actions :
             splitter = findElementsDictionary[action] + '="'
-            value_splitter = 'value="'
-            value = items[1].split(value_splitter)[1].replace('"}', '', -1)
             element = items[1].split(splitter)[1].split('",')[0]
-            element_value = (element, value)
-            tuple = (action, element_value)
+            tuple = (action, element)
             findElement_list.append(tuple)
         elif action in other_actions:
             other_actions_list.append(action)
 
-    unique_findElement_list= [(x[0], x[1][0]) for x in set(findElement_list)]
-
-    print Counter(other_actions_list)
-    return dict(Counter(unique_findElement_list)), dict(Counter(other_actions_list))
+    return dict(Counter(findElement_list)), dict(Counter(other_actions_list))
 
 
 def get_dictionary(file_contents):
@@ -124,12 +118,12 @@ def process_data_for_csv(elementdict, exception):
     for key, value in elementdict.items():
         # proces the data according to column name
         for element in value:
-            if key != "ChildElement":
-                title = element.replace(' ', '')
-                dictionary[title] = value[element]
-            if key == "ChildElement":
-                title = element.replace(' ', '')
-                dictionary["Child" + title] = value[element]
+            title = element.replace(' ', '')
+            if dictionary.get(title) is None:
+                dictionary[title] = int(value[element])
+            else:
+                past_value = int(dictionary[title])
+                dictionary[title] = past_value + int(value[element])
 
     # For exception one
     dictionary.update(exception)
@@ -137,10 +131,20 @@ def process_data_for_csv(elementdict, exception):
     return dictionary
 
 def write_in_csv(content_list,out_file_name):
-    fields = ['Childcssselector', 'Childxpath', 'Childtagname', 'xpath', 'partiallinktext',
-              'classname', 'linktext', 'name', 'cssselector', 'tagname', 'id',
-              'sendKeysToElement', 'implicitlyWait', 'get','clickElement']
+    fields = ['xpath',
+              'partiallinktext',
+              'classname',
+              'linktext',
+              'name',
+              'cssselector',
+              'tagname',
+              'id',
+              'sendKeysToElement',
+              'implicitlyWait',
+              'get',
+              'clickElement']
     # dictionary= get_dictionary(file_contents)
+    print content_list, "<<<<<<<<<<<<<<<<<<<<"
     try:
         with open('/Users/adityanisal/Dropbox/ExtractedResultFiles/CSV/'+out_file_name+'.csv', 'w') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=fields)
@@ -161,15 +165,11 @@ def get_all_processd_contents(major_version_database, ref_sessionId_table_name):
 
     try:
         all_contents = []
-        contents = ''
-        number = 1
         rows_in_ref_sessionId_table = range(len(list_of_ref_sessionIds))
         for i in rows_in_ref_sessionId_table:
             ref_action_file_contents = extract_action_file_contents(list_of_ref_sessionIds[i], action_files_dir)
-            contents = contents + ',\n' + ref_action_file_contents
-
-        dictionary= get_dictionary(contents)
-        all_contents.append(dictionary)
+            dictionary= get_dictionary(ref_action_file_contents)
+            all_contents.append(dictionary)
         return all_contents
 
     except:
@@ -248,10 +248,10 @@ bedrock_mv1_reference_version_sessionId_table='sessionids_mv1_2015_01_13'
 # action_files_dir = "/Users/adityanisal/Dropbox/ActionFiles/"
 #
 # main('amo_mv1', fireplace_mv4_reference_version_sessionId_table)
-connect_mysql = MysqlPython('localhost', 'root', '', fireplace_database)
+connect_mysql = MysqlPython('localhost', 'root', '', moodle_reordered_database)
 action_files_dir = "/Users/adityanisal/Dropbox/ActionFiles/"
 # content_list =
 # main('fireplace_mv1', fireplace_mv4_reference_version_sessionId_table)
 
-content_list = get_all_processd_contents('fireplace_mv4', fireplace_mv4_reference_version_sessionId_table)
-write_in_csv(content_list,"Fireplace-mv4-TestSuite-Level")
+content_list = get_all_processd_contents('moodle', moodle_reordered_reference_version_sessionId_table)
+write_in_csv(content_list,"Moodle-less-columns")

@@ -207,6 +207,26 @@ jenkins_core_MV3_compare_version_sessionId_table_list = ['sessionids_1_609_1','s
 jenkins_core_MV4_reference_version_sessionId_table = 'sessionids_1_625'
 jenkins_core_MV4_compare_version_sessionId_table_list = ['sessionids_1_625_1','sessionids_1_625_2','sessionids_1_625_3','sessionids_1_627','sessionids_1_629','sessionids_1_631','sessionids_1_633','sessionids_1_635','sessionids_1_637','sessionids_1_639','sessionids_1_641']
 
+####### PLUGINS
+# Jenkins plugins MV1
+jenkins_plugins_MV1_reference_version_sessionId_table= 'sessionids_1_580'
+jenkins_plugins_MV1_compare_version_sessionId_table_list=['sessionids_1_580_1','sessionids_1_580_2','sessionids_1_580_3','sessionids_1_582','sessionids_1_584','sessionids_1_586','sessionids_1_588','sessionids_1_590','sessionids_1_592','sessionids_1_594']
+
+## PLugins MV2
+jenkins_plugins_MV2_reference_version_sessionId_table = 'sessionids_1_596'
+jenkins_plugins_MV2_compare_version_sessionId_table_list = ['sessionids_1_596_1','sessionids_1_596_2','sessionids_1_596_3','sessionids_1_598','sessionids_1_600','sessionids_1_602','sessionids_1_604','sessionids_1_606']
+
+## Plugins MV3
+jenkins_plugins_MV3_reference_version_sessionId_table = 'sessionids_1_609'
+jenkins_plugins_MV3_compare_version_sessionId_table_list = ['sessionids_1_609_1','sessionids_1_609_2','sessionids_1_609_3','sessionids_1_611','sessionids_1_613','sessionids_1_615','sessionids_1_617','sessionids_1_619','sessionids_1_621','sessionids_1_623']
+
+## Plugins MV4
+jenkins_plugins_MV4_reference_version_sessionId_table = 'sessionids_plugins_1_625'
+jenkins_plugins_MV4_compare_version_sessionId_table_list = ['sessionids_plugins_1_625_1','sessionids_plugins_1_625_2','sessionids_plugins_1_625_3','sessionids_plugins_1_627','sessionids_plugins_1_629','sessionids_plugins_1_631','sessionids_plugins_1_633','sessionids_plugins_1_635']
+
+# jenkins_plugins_MV4_reference_version_sessionId_table = 'sessionids_1_625'
+# jenkins_plugins_MV4_compare_version_sessionId_table_list = ['sessionids_1_625_1','sessionids_1_625_2','sessionids_1_625_3','sessionids_1_627','sessionids_1_629','sessionids_1_631','sessionids_1_633','sessionids_1_635']
+
 
 ############################################## Moodle ##############################################
 # Moodle MV1
@@ -260,9 +280,9 @@ bedrock_mv2_compare_version_sessionId_table_list=['sessionids_mv2_2015_06_15','s
 """
 
 """ !!! Input parameters: Select DATABASE name !!! """
-connect_mysql = MysqlPython('localhost', 'root', '', bedrock_database)
+connect_mysql = MysqlPython('localhost', 'root', '', jenkins_plugins_database)
 action_files_dir = "/Users/adityanisal/Dropbox/ActionFiles/"
 
 """ !!! Input parameters: Select reference table and comparable table name, APP Name !!! """
-for table in bedrock_mv2_compare_version_sessionId_table_list:
-    main('bedrock_mv2', bedrock_mv2_reference_version_sessionId_table, table, action_files_dir, 'bedrock')
+for table in jenkins_plugins_MV3_compare_version_sessionId_table_list:
+    main('jenkins_plugins_mv3',jenkins_plugins_MV3_reference_version_sessionId_table , table, action_files_dir, 'jenkins_plugins')
