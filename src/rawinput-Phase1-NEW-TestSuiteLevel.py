@@ -14,10 +14,13 @@ import csv,os,sys
 from collections import Counter
 from mysql_connection import MysqlPython
 
-############################################# H E L P - M E N U  #############################################
-# Presents help menu to the user to illustrate usage options
-
+homedir = os.environ['HOME'] # home directory of user
 filename = os.path.basename(__file__) # name of current file
+
+############################################# H E L P - M E N U  #############################################
+
+
+# Presents help menu to the user to illustrate usage options
 all_arguments = sys.argv
 help_commands = ['help', '--help', '-h']
 try:
@@ -25,68 +28,41 @@ try:
         print (100 * '='),'\n', (40 * ' '), "H E L P - M E N U", (40 * ' '),'\n', (100 * '-')
         print "usage(): python %s" % filename ,'\n', (100 * '-') ,'\n', "Sample inputs and required parameters:" ,'\n', (100 * '-')
         print  """\nInput the information (one-by-one) as following:
-                 \n1. SessionIds database name for the chosen application: amo_sessionIDs
-                 \n## For all database names, refer to './sessionIds_database_names.txt'
-                 \n2. SessionIds table name for the desired version: sessionids_2015_04_25
-                 \n## For all database names, refer to './sessionIds_database_names.txt'
-                 \n3. Directory name in which action files are stored (including trailing slashes): /Users/$USER/ActionFiles/
-                 \n## Example actions file: /Users/$USER/ActionFiles/707231c1-b9b3-4d25-8343-ed230be6c993/actions.txt
-                 \n4. Application's major version: amo_mv1
-                 \n## For all application major version names, refer to './application_major_version_names.txt'
-                 \n5. Output filename: mozilla-addons-mv1.
-                 \n## Example output file: mozilla-addons-mv1.csv
-                 \n============ For additional details, please refer to README.md ============ """, '\n',(100 * '-')
+                 \n1. SessionIds database name for the chosen application: amo_sessionIDs \n## For all database names, refer to './sessionIds_database_names.txt'
+                 \n2. SessionIds table name for the desired version: sessionids_2015_04_25 \n## For all database names, refer to './sessionIds_table_names.txt'
+                 \n3. Directory name in which action files are stored (including trailing slashes): %s/ActionFiles/ \n## Example actions file: %s/ActionFiles/707231c1-b9b3-4d25-8343-ed230be6c993/actions.txt
+                 \n4. Application's major version: amo_mv1 \n## For all application major version names, refer to './application_major_version_names.txt'
+                 \n5. Output filename: mozilla-addons-mv1. \n## Example output file: mozilla-addons-mv1.csv
+                 \n============ For additional details, please refer to README.md ============ """ % (homedir,homedir), '\n',(100 * '-')
         exit()
 except IndexError:
     pass
-# try:
-#     if all_arguments[1] in help_commands:
-#         print (100 * '=')
-#         print (40 * ' '), "H E L P - M E N U", (40 * ' ')
-#         print (100 * '-')
-#         print "usage(): python %s" % filename
-#         print (100 * '-')
-#         print "Sample inputs and required parameters:"
-#         print (100 * '-')
-#         print "\nInput the information (one-by-one) as following: "
-#         print "\n1. SessionIds database name for the chosen application: amo_sessionIDs"
-#         print "## For all database names, refer to './sessionIds_database_names.txt' "
-#         print "\n2. SessionIds table name for the desired version: sessionids_2015_04_25"
-#         print "## For all database names, refer to './sessionIds_database_names.txt' "
-#         print "\n3. Directory name in which action files are stored (including trailing slashes): /Users/$USER/ActionFiles/"
-#         print "## Example actions file: /Users/$USER/ActionFiles/707231c1-b9b3-4d25-8343-ed230be6c993/actions.txt"
-#         print "\n4. Application's major version: amo_mv1"
-#         print "## For all application major version names, refer to './application_major_version_names.txt' "
-#         print "\n5. Output filename: mozilla-addons-mv1."
-#         print "## Example output file: mozilla-addons-mv1.csv"
-#         print "\n============ For additional details, please refer to README.md ============"
-#         print (100 * '-')
-#         exit()
-# except IndexError:
-#     pass
-
-############################################# M A I N - M E N U  #############################################
-# Presents help menu to the user to illustrate possible options
 
 print (100 * '=')
 print (40 * ' '), "M A I N - M E N U", (40 * ' ')
 print (100 * '-')
 print "For executing this script: python %s" % filename
 print "\nFor help regarding input parameters, please execute: python %s --help" % filename
-print (100 * '-')
+print "The --help option presents detailed information about the usage, including examples."
+print (100 * ' '), '\n', (44 * '*'), "User Inputs", (44 * '*')
 
 #############################################  Get Inputs from User #############################################
 def get_database_input():
     """
     Gets MySQL sessionId database name input from the user.
-    """
 
-    database_name = raw_input("\n1. Please enter the sessionIds database name for the chosen application: ") # how does it look like
+    For all database names, refer to './sessionIds_database_names.txt'
+    Example database name: amo_sessionIDs
+    """
+    # Get input through 'raw_input'
+    database_name = raw_input("\n1. SessionIds database name for the chosen application: ")
+    # Connect to MySQL database
     connect_mysql = MysqlPython('localhost', 'root', '', database_name)
     connected = connect_mysql.check_open()
     return connected, database_name
 
 is_connected, database_name = get_database_input()
+# Re-ask for input in case input is incorrectly specified
 while is_connected is False:
     print "Please Re-enter the correct database name."
     is_connected, database_name = get_database_input()
@@ -94,36 +70,51 @@ while is_connected is False:
 def get_table_name_input():
     """
     Gets MySQL sessionId table name input from the user.
-    """
-    table_name = raw_input("\n2. Please enter the sessionIds table name for the desired version: ") # how does it look like
-    connect_mysql_table = MysqlPython('localhost', 'root', '', database_name)
-    table_exits = connect_mysql_table.check_table_exists(table_name)
-    return table_exits, table_name
 
-check_table_exits,table_name = get_table_name_input()
-while check_table_exits is False:
+    For all table names, refer to './sessionIds_table_names.txt'
+    Example table name: sessionids_2015_04_25
+    """
+     # Get input through 'raw_input'
+    table_name = raw_input("\n2. SessionIds table name for the desired version: ")
+    # Connect to MySQL database
+    connect_mysql_table = MysqlPython('localhost', 'root', '', database_name)
+    # Check if SQL table exists
+    table_exists = connect_mysql_table.check_table_exists(table_name)
+    return table_exists, table_name
+
+check_table_exists,table_name = get_table_name_input()
+# Re-ask for input in case input is incorrectly specified
+while check_table_exists is False:
     print "Please Re-enter the correct table name."
-    check_table_exits, table_name = get_table_name_input()
+    check_table_exists, table_name = get_table_name_input()
 
 def get_action_files_directory():
     """
-    Gets action file directory name input from the user.
+    Gets actions.txt files directory name input from the user.
+
+    Example actions file: /Users/$USER/ActionFiles/707231c1-b9b3-4d25-8343-ed230be6c993/actions.txt
     """
-    action_files_directory = raw_input("\n3. Please enter the directory (including trailing slashes) in which action files are stored: ")
+     # Get input through 'raw_input'
+    action_files_directory = raw_input("\n3. Directory name in which action files are stored (including trailing slashes): ")
+    # Check if directory is present
     dir_exists = os.path.isdir(action_files_directory)
     return dir_exists, action_files_directory
 
 check_dir_exists,action_files_directory = get_action_files_directory()
+# Re-ask for input in case input is incorrectly specified
 while check_dir_exists is False:
     print "Following directory does not exist: ", action_files_directory
     print "Please re-enter the valid actions files directory."
     check_dir_exists,action_files_directory = get_action_files_directory()
 
-# Get major version of the application
-applications_major_version_database = raw_input("\n4. Please enter the application's major version: ")
-# Get output file name
-output_file_name = raw_input("\n5. Please enter the output filename: ")
+# Get major version of the application. Example: amo_mv1. For all application major version names, refer to './application_major_version_names.txt'
+# Get input through 'raw_input'
+applications_major_version_database = raw_input("\n4. Application's major version: ")
+# Get output file name, such as mozilla-addons-mv1. Example output file: mozilla-addons-mv1.csv
+# Get input through 'raw_input'
+output_file_name = raw_input("\n5. Output filename: ")
 
+print (100 * ' '), '\n', (41 * '*'), "Ongoing script execution", (41 * '*'), '\n'
 
 def extract_action_file_contents(sessionId, action_file_dir):
     """
@@ -135,13 +126,12 @@ def extract_action_file_contents(sessionId, action_file_dir):
     :raises: File read error if actions.txt file for given sessionId does not exist in given directory.
 
     Example:
-        Sample action_file_dir (on OS X): /Users/$USER/ActionFiles/707231c1-b9b3-4d25-8343-ed230be6c993/actions.txt
+        Sample action_file_dir: /Users/$USER/ActionFiles/707231c1-b9b3-4d25-8343-ed230be6c993/actions.txt
     """
-
+    # Read contents of actions.txt files
     try:
         file_content = open(action_file_dir + '/' + sessionId + '/' + 'actions.txt').read()
         return file_content
-
     except IOError:
         print "==== Error! Please check if following actions file exists : ", action_file_dir + '/' + sessionId + '/' + 'actions.txt', "===="
 
@@ -165,12 +155,14 @@ def return_raw_actions(file_contents):
     """
 
     actions_list = []
+    # Parse the action file contents
     actions = file_contents.split(' {', 1)[1].split('\n,')
     total_length = range(len(actions))
     for number in total_length:
         data = actions[number].split('}\n id :')[0].replace('\n actions : {', '').replace('[', '', 1).split('],\n', -1)
         length = len(data)
         total_action = range(length)
+        # Return the actions in the form of a list
         for i in total_action:
             action = data[i].split(',', 1)[1]
             actions_list.append(action)
@@ -290,7 +282,7 @@ def process_data_for_csv(elementdict, exception):
     """
     dictionary = {}
     for key, value in elementdict.items():
-        # proces the data according to column name
+        # process the data according to column name
         for element in value:
             title = element.replace(' ', '')
             if dictionary.get(title):
@@ -298,7 +290,7 @@ def process_data_for_csv(elementdict, exception):
             else:
                 dictionary[title] = value[element]
 
-    # For exception one
+    # For WebDriver actions other than element locator actions
     dictionary.update(exception)
     return dictionary
 
@@ -345,17 +337,20 @@ def get_all_processed_contents(major_version_database, ref_sessionId_table_name,
     of these contents.
 
     :param major_version_database: Major version name for selecting the sessionIds of an application, e.g. jenkins_core_mv1
-    :param ref_sessionId_table_name: MySQL table name for reference major version of an application, e.g. for Jenkins version 1.580 -> sessionids_1_580
+    :param ref_sessionId_table_name: MySQL table name for reference major version of an application, e.g. for Jenkins version 1.609 -> sessionids_1_609
     :param action_files_directory: Directory in which actions.txt files are stored.
     :return: List of all actions to be printed to CSV file
     """
     action_files_dir = action_files_directory
+
+    # Connect to MySQL database in which sessionIds are stored. SessionIds for each version are stored as a MySQL table. Return list of all sessionIds from this table.
     try:
         list_of_ref_sessionIds= connect_mysql.select_major_version_database(major_version_database, ref_sessionId_table_name)
     except :
         print "==== MySQL ERROR : Please check if the MySQL table name and major-version information is correct. ===="
         print "==== Database Table: ", ref_sessionId_table_name, " | ", "Major version: ", major_version_database, "===="
 
+    # Return actions for all the tests
     if list_of_ref_sessionIds:
         all_contents = []
         contents = ''
@@ -363,7 +358,6 @@ def get_all_processed_contents(major_version_database, ref_sessionId_table_name,
         for i in rows_in_ref_sessionId_table:
             ref_action_file_contents = extract_action_file_contents(list_of_ref_sessionIds[i], action_files_dir)
             contents = contents + ',\n' + ref_action_file_contents
-
         dictionary = get_dictionary(contents)
         all_contents.append(dictionary)
         return all_contents
@@ -377,9 +371,11 @@ def write_in_csv(content_list,out_file_name,output_file_directory):
     :param out_file_name: Name of the output CSV file
     :return: Result of writing (success or failure)
     """
+    # Headers for printing to CSV file
     fields = [ 'xpath', 'partiallinktext','classname', 'linktext', 'name', 'cssselector', 'tagname', 'id',
               'sendKeysToElement', 'implicitlyWait', 'get','clickElement']
 
+    # Contents to be printed to CSV file
     if content_list:
         try:
             with open(output_file_directory+ '/'+ out_file_name + '.csv', 'a') as csvfile:
@@ -395,18 +391,26 @@ def write_in_csv(content_list,out_file_name,output_file_directory):
         except IOError:
             print "==================== ERROR: Filewrite error ===================="
 
-
 # Connect to MySQL database in which sessionIds are stored
 connect_mysql = MysqlPython('localhost', 'root', '', database_name)
 
-# Print to CSV file
-output_file_directory='/Users/adityanisal/arbit'
+# Directory in which all output files are to be stored. If desired, 'output_file_directory' can be changed to preferred directory.
+output_file_directory = homedir + '/' + 'PythonScriptsOutput'
+check_output_dir_exists = os.path.isdir(output_file_directory)
+try:
+    if check_output_dir_exists is False:
+        os.mkdir(output_file_directory)
+except OSError:
+    print "Error while creating output directory"
+
+# Get all the data for counting and printing the number of element locators and webdriver actions
 content_list = get_all_processed_contents(applications_major_version_database, table_name, action_files_directory)
+# Print to CSV file
 success = write_in_csv(content_list,output_file_name,output_file_directory)
 
 # Re-run message to run the program if unsuccessful
 if success is True:
-    print (100 * '-'), '\n', (20 * ' '), "The action counts are successfully extracted to file:", output_file_directory + '/' + output_file_name + '.csv', (20 * ' '), '\n', (100 * '=')
+    print (100 * '-'), '\n', "The action counts are successfully extracted to file:", output_file_directory + '/' + output_file_name + '.csv', '\n', (100 * '=')
 else:
     print (100 * '-'), '\n', (20 * ' '), "Please re-run the program with correct inputs. ", '\n', (100 * '=')
 
