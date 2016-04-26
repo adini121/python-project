@@ -122,11 +122,7 @@ def do_comparison(app_name, ref_sessionId_table_name, comp_sessionId_table_name,
     return humanfriendly_results, actions_difference
 
 def get_all_data_of_session(sessionId, directory):
-    """
-    :param sessionId: sessionId of a test
-    :param directory:
-    :return:
-    """
+
     file_contents = extract_action_file_contents(sessionId, directory)
     actions = return_actions_dict(file_contents)
     action_id = get_the_action_id(file_contents)
@@ -182,6 +178,8 @@ jenkins_core_database = 'jenkins_core_sessionIDs'
 jenkins_plugins_database = 'jenkins_plugins_sessionIDs'
 # ====  Moodle ====
 moodle_database = 'moodle_sessionIDs'
+
+moodle_reordered_database = 'reordered_moodle_sessionIDs'
 # ====  Fireplace (Mozilla Marketplace) ====
 fireplace_database = 'fireplace_sessionIDs'
 # ====  AMO (Addons Mozilla) ====
@@ -232,6 +230,64 @@ jenkins_plugins_MV4_compare_version_sessionId_table_list = ['sessionids_plugins_
 # Moodle MV1
 moodle_reference_version_sessionId_table= 'sessionids_230_beta_fin'
 moodle_compare_version_sessionId_table_list=['sessionids_230_retest','sessionids_231_fin','sessionids_232_fin','sessionids_233_fin','sessionids_234_retest','sessionids_236_fin','sessionids_237_fin','sessionids_238_fin','sessionids_239_fin','sessionids_2310_fin','sessionids_2311_fin']
+
+# Moodle Reordered
+moodle_reordered_reference_version_sessionId_table='sessionids_230_beta_reordered'
+moodle_reordered_comparable_version_sessionId_table_list=['sessionids_230_rc1_reordered','sessionids_230_reordered','sessionids_231_reordered','sessionids_232_reordered','sessionids_233_reordered','sessionids_234_reordered','sessionids_235_reordered','sessionids_236_reordered','sessionids_237_reordered','sessionids_238_reordered','sessionids_239_reordered','sessionids_2310_reordered','sessionids_2311_reordered']
+############################################## Fireplace (Mozilla Marketplace) ##############################################
+# Fireplace MV1
+fireplace_mv1_reference_version_sessionId_table='sessionids_mv1_2014_12_16'
+fireplace_mv1_compare_version_sessionId_table_list=['sessionids_mv1_2014_12_22_02','sessionids_mv1_2015_01_06', 'sessionids_mv1_2015_01_20','sessionids_mv1_2015_01_27','sessionids_mv1_2015_02_10']
+
+# Fireplace MV2
+fireplace_mv2_reference_version_sessionId_table='sessionids_MV2_2015_02_10'
+fireplace_mv2_compare_version_sessionId_table_list=['sessionids_MV2_2015_02_24','sessionids_MV2_2015_03_10','sessionids_MV2_2015_04_01','sessionids_MV2_2015_04_10','sessionids_MV2_2015_04_21','sessionids_MV2_2015_04_28']
+
+# Fireplace MV3
+fireplace_mv3_reference_version_sessionId_table='sessionids_MV3_2015_07_07'
+fireplace_mv3_compare_version_sessionId_table_list=['sessionids_MV3_2015_07_21','sessionids_MV3_2015_07_31','sessionids_MV3_2015_08_11','sessionids_MV3_2015_08_25','sessionids_MV3_2015_09_08','sessionids_MV3_2015_09_22','sessionids_MV3_2015_09_29','sessionids_MV3_2015_10_13','sessionids_MV3_2015_11_02']
+
+# Fireplace MV4
+fireplace_mv4_reference_version_sessionId_table='sessionids_MV4_2015_11_02'
+fireplace_mv4_compare_version_sessionId_table_list=['sessionids_MV4_2015_11_17','sessionids_MV4_2015_11_24','sessionids_MV4_2015_12_01','sessionids_MV4_2015_12_22','sessionids_MV4_2016_01_12']
+
+############################################## AMO ##############################################
+# AMO MV1
+amo_mv1_reference_version_sessionId_table='sessionids_2015_01_01'
+amo_mv1_compare_version_sessionId_table_list=['sessionids_2015_01_14','sessionids_2015_02_11','sessionids_2015_03_05','sessionids_2015_03_18','sessionids_2015_03_26','sessionids_2015_04_16','sessionids_2015_04_25_mv0']
+
+#AMO MV2
+amo_mv2_reference_version_sessionId_table='sessionids_2015_04_25'
+amo_mv2_compare_version_sessionId_table_list=['sessionids_2015_05_06','sessionids_2015_05_21','sessionids_2015_05_29','sessionids_2015_06_09','sessionids_2015_06_15','sessionids_2015_07_13','sessionids_2015_07_28','sessionids_mv1_on_2015_07_31']
+
+#AMO MV3
+amo_mv3_reference_version_sessionId_table='sessionids_2015_07_31'
+amo_mv3_compare_version_sessionId_table_list=['sessionids_2015_08_11','sessionids_2015_08_27','sessionids_2015_09_10','sessionids_2015_10_08','sessionids_2015_10_22']
+
+############################################## Bedrock (Mozilla.org) ##############################################
+#Bedrock MV1
+bedrock_mv1_reference_version_sessionId_table='sessionids_mv1_2015_01_13'
+bedrock_mv1_compare_version_sessionId_table_list=['sessionids_mv1_2015_01_30','sessionids_mv1_2015_02_13','sessionids_mv1_2015_02_26','sessionids_mv1_2015_03_12','sessionids_mv1_2015_03_30','sessionids_mv1_2015_04_10','sessionids_mv1_2015_04_20']
+
+bedrock_mv2_reference_version_sessionId_table='sessionids_mv2_2015_06_08'
+bedrock_mv2_compare_version_sessionId_table_list=['sessionids_mv2_2015_06_15','sessionids_mv2_2015_07_01','sessionids_mv2_2015_07_15','sessionids_mv2_2015_07_31','sessionids_mv2_2015_08_14','sessionids_mv2_2015_09_16','sessionids_mv2_2015_10_01','sessionids_mv2_2015_10_15','sessionids_mv2_2015_10_26']
+""" Call to main function """
+
+""" Call to main function """
+""" Change app name to reflect proper DB name """
+""" Change reference and comparable table names """
+""" Input parameters to be given in sequence:
+    1. SQL query version (eg. jenkins_mv1, moodle, amo_mv0)
+    5. app name
+"""
+
+""" !!! Input parameters: Select DATABASE name !!! """
+connect_mysql = MysqlPython('localhost', 'root', '', moodle_reordered_database)
+action_files_dir = "/Users/adityanisal/Dropbox/ActionFiles/"
+
+""" !!! Input parameters: Select reference table and comparable table name, APP Name !!! """
+for table in moodle_reordered_comparable_version_sessionId_table_list:
+    main('moodle_reordered', moodle_reordered_reference_version_sessionId_table, table, action_files_dir, 'moodle_reordered')
 
 ############################################## Fireplace (Mozilla Marketplace) ##############################################
 # Fireplace MV1
@@ -285,4 +341,4 @@ action_files_dir = "/Users/adityanisal/Dropbox/ActionFiles/"
 
 """ !!! Input parameters: Select reference table and comparable table name, APP Name !!! """
 for table in jenkins_plugins_MV3_compare_version_sessionId_table_list:
-    main('jenkins_plugins_mv3',jenkins_plugins_MV3_reference_version_sessionId_table , table, action_files_dir, 'jenkins_plugins')
+    main('jenkins_plugins_mv3',jenkins_plugins_MV3_reference_version_sessionId_table , table, action_files_dir, 'plugins_mv3')

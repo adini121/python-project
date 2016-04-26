@@ -146,7 +146,7 @@ def write_in_csv(content_list,out_file_name):
     # dictionary= get_dictionary(file_contents)
     print content_list, "<<<<<<<<<<<<<<<<<<<<"
     try:
-        with open('/Users/adityanisal/Dropbox/ExtractedResultFiles/CSV/'+out_file_name+'.csv', 'w') as csvfile:
+        with open('/Users/adityanisal/Dropbox/ExtractedResultFiles/New-CSV/'+out_file_name+'.csv', 'w') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=fields)
             writer.writeheader()
             for dictionary in content_list:
@@ -207,6 +207,18 @@ jenkins_core_MV3_reference_version_sessionId_table = 'sessionids_1_609'
 # Jenkins core MV4
 jenkins_core_MV4_reference_version_sessionId_table = 'sessionids_1_625'
 
+# Jenkins plugins MV1
+jenkins_plugins_MV1_reference_version_sessionId_table= 'sessionids_1_580'
+
+## PLugins MV2
+jenkins_plugins_MV2_reference_version_sessionId_table = 'sessionids_1_596'
+
+## Plugins MV3
+jenkins_plugins_MV3_reference_version_sessionId_table = 'sessionids_1_609'
+
+## Plugins MV4
+jenkins_plugins_MV4_reference_version_sessionId_table = 'sessionids_plugins_1_625'
+
 
 ############################################## Moodle ##############################################
 # Moodle MV1
@@ -240,7 +252,7 @@ amo_mv3_reference_version_sessionId_table='sessionids_2015_07_31'
 ############################################## Bedrock (Mozilla.org) ##############################################
 #Bedrock MV1
 bedrock_mv1_reference_version_sessionId_table='sessionids_mv1_2015_01_13'
-
+bedrock_mv2_reference_version_sessionId_table='sessionids_mv2_2015_06_08'
 
 
 """ !!! Input parameters: Select DATABASE name !!! """
@@ -248,10 +260,10 @@ bedrock_mv1_reference_version_sessionId_table='sessionids_mv1_2015_01_13'
 # action_files_dir = "/Users/adityanisal/Dropbox/ActionFiles/"
 #
 # main('amo_mv1', fireplace_mv4_reference_version_sessionId_table)
-connect_mysql = MysqlPython('localhost', 'root', '', moodle_reordered_database)
+connect_mysql = MysqlPython('localhost', 'root', '', bedrock_database)
 action_files_dir = "/Users/adityanisal/Dropbox/ActionFiles/"
 # content_list =
 # main('fireplace_mv1', fireplace_mv4_reference_version_sessionId_table)
 
-content_list = get_all_processd_contents('moodle', moodle_reordered_reference_version_sessionId_table)
-write_in_csv(content_list,"Moodle-less-columns")
+content_list = get_all_processd_contents('bedrock_mv2', bedrock_mv2_reference_version_sessionId_table)
+write_in_csv(content_list,"Bedrock-Mv2-rq2")

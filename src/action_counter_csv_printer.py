@@ -135,6 +135,7 @@ def write_in_csv(content_list,out_file_name):
               'classname', 'linktext', 'name', 'cssselector', 'tagname', 'id',
               'sendKeysToElement', 'implicitlyWait', 'get','clickElement']
     # dictionary= get_dictionary(file_contents)
+    print content_list, "<<<<<<<<<<<<<<<<<<<<"
     try:
         with open('/Users/adityanisal/Dropbox/ExtractedResultFiles/CSV/'+out_file_name+'.csv', 'w') as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=fields)
@@ -238,10 +239,10 @@ bedrock_mv1_reference_version_sessionId_table='sessionids_mv1_2015_01_13'
 # action_files_dir = "/Users/adityanisal/Dropbox/ActionFiles/"
 #
 # main('amo_mv1', fireplace_mv4_reference_version_sessionId_table)
-connect_mysql = MysqlPython('localhost', 'root', '', amo_database)
+connect_mysql = MysqlPython('localhost', 'root', '', moodle_reordered_database)
 action_files_dir = "/Users/adityanisal/Dropbox/ActionFiles/"
 # content_list =
 # main('fireplace_mv1', fireplace_mv4_reference_version_sessionId_table)
 
-content_list = get_all_processd_contents('amo_mv3', amo_mv3_reference_version_sessionId_table)
-write_in_csv(content_list,"amomv325feb")
+content_list = get_all_processd_contents('moodle', moodle_reordered_reference_version_sessionId_table)
+write_in_csv(content_list,"Moodle-SMALL")

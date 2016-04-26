@@ -9,7 +9,9 @@ from phase2_mysql_connection import Phase2MysqlPython
 def extract_p2_action_file_contents(sessionId):
     """ This function extracts the contents of action file , takes as input the sessionId and action files directory"""
     p2_action_file_dir='/Users/adityanisal/Dropbox/PhaseTwoActionFiles/'
+    # p2_action_file_dir='/Users/adityanisal/arbit/discard/phase2_jenkins_refurbised/'
     try:
+        # file_content=open(p2_action_file_dir + sessionId + '.' + 'actions.txt.new').read()
         file_content=open(p2_action_file_dir + sessionId + '.' + 'actions.txt').read()
         return file_content
 
@@ -27,11 +29,11 @@ def get_element_dict(data):
     get = []
     implicitly_wait = []
 
-    exception = {
-      'clickElement': [],
-      'sendKeysToElement': [],
-      #'setTimeout': [],
-    }
+    # exception = {
+    #   # 'clickElement': [],
+    #   # 'sendKeysToElement': [],
+    #   #'setTimeout': [],
+    # }
 
     items = data.split(']\n')
     for item in items:
@@ -44,18 +46,19 @@ def get_element_dict(data):
             tuple = (using, value)
             my_list = dictionary[element_name]
             my_list.append(tuple)
-        if element_name == "get": #Get only the path of [get {url="someurl/path"}]
-            get_url=re.findall('get\s\{url\=\"http?:\\/\\/[a-zA-Z0-9]+\.[a-zA-Z0-9]+\.[a-zA-Z0-9]+\.[a-zA-Z0-9]+:[a-zA-Z0-9]+(.*?)\}',
-                               item.split(', ', 1)[1], re.DOTALL | re.MULTILINE)
-            get.append(get_url)
-        if element_name in exception:
-            exception[element_name].append(1)
+        # if element_name == "get": #Get only the path of [get {url="someurl/path"}]
+        #     get_url=re.findall('get\s\{url\=\"http?:\\/\\/[a-zA-Z0-9]+\.[a-zA-Z0-9]+\.[a-zA-Z0-9]+\.[a-zA-Z0-9]+:[a-zA-Z0-9]+(.*?)\}',
+        #                        item.split(', ', 1)[1], re.DOTALL | re.MULTILINE)
+        #     get.append(get_url)
+        # if element_name in exception:
+        #     exception[element_name].append(1)
         if element_name == "implicitlyWait":
             time = element_content.split('ms=', 1)[1].replace("}", "")
             if float(time) != 0.0:
                 implicitly_wait.append(float(time))
-
-    return dictionary, get, exception, implicitly_wait
+    # print dictionary
+    # return dictionary, get, exception, implicitly_wait
+    return dictionary,implicitly_wait
 
 
 def set_(data):
@@ -83,23 +86,18 @@ def print_and_process(data1, data2):
                     if list1[i] in list2:
                         tuple = (element, list1[i][0])
                         reorder_list.append(tuple)
-                        # print list1[i], i, "ordering has been changed to", list2.index(list1[i]), "in second one"
 
                     else:
                         tuple = (element, list1[i][0])
                         changed_list.append(tuple)
-                        print "Element ",list1[i], " ---Changed to -->", list2[i]
             except IndexError:
                 if list1[i] in list2:
                     tuple = (element, list1[i][0])
                     reorder_list.append(tuple)
-                    # print list1[i], i, "ordering has been changed to", list2.index(list1[i]), "in second one"
                 else:
                     print ""
                     print list1[i], "not present in second data"
-        # print list1
-        # print "@@@@@@@@@@@"
-        # print list2
+
         list1_count = Counter(list1_number)
         list2_count = Counter(list2_number)
         for obj in list1_count:
@@ -116,15 +114,15 @@ def print_and_process(data1, data2):
     return reorder_list, changed_list, deleted_list, added_list
 
 
-def get_deleted_or_added(data):
-    """Can be deleted, not used anymore"""
-    dictionary = {}
-    for obj in data:
-        if not obj[1] in dictionary:
-            dictionary[obj[1]] = [obj[0]]
-        else:
-            dictionary[obj[1]].append(obj[0])
-    return dictionary
+# def get_deleted_or_added(data):
+#     """Can be deleted, not used anymore"""
+#     dictionary = {}
+#     for obj in data:
+#         if not obj[1] in dictionary:
+#             dictionary[obj[1]] = [obj[0]]
+#         else:
+#             dictionary[obj[1]].append(obj[0])
+#     return dictionary
 
 def print_accordance(type, data):
     dictionary = {
@@ -143,32 +141,32 @@ def print_accordance(type, data):
             dictionary[key[0]].update({key[1]: value})
         return dictionary
 
+#
+# def compare_get(get_data1, get_data2):
+#     """Compare URL paths of two get{url} occurances"""
+#     changed_1 = []
+#     changed_2 = []
+#
+#     for url in set_(get_data1):
+#         if not url in get_data2:
+#             changed_1.append(1)
+#     for url in set_(get_data2):
+#         if not url in get_data1:
+#             changed_2.append(1)
+#     total_get_diff=len(changed_1)+len(changed_2)
+#     print "changed get", total_get_diff
+#     return total_get_diff
 
-def compare_get(get_data1, get_data2):
-    """Compare URL paths of two get{url} occurances"""
-    changed_1 = []
-    changed_2 = []
-
-    for url in set_(get_data1):
-        if not url in get_data2:
-            changed_1.append(1)
-    for url in set_(get_data2):
-        if not url in get_data1:
-            changed_2.append(1)
-    total_get_diff=len(changed_1)+len(changed_2)
-    print "changed get", total_get_diff
-    return total_get_diff
-
-def compare_exception(exception1, exception2):
-    dictionary={}
-    for key in exception1:
-        one = len(exception1[key])
-        two = len(exception2[key])
-        counting_element_type=key
-        dictionary[key]= one-two
-    for key,vals in dictionary.items():
-            print key,"---",vals
-    return dictionary
+# def compare_exception(exception1, exception2):
+#     dictionary={}
+#     for key in exception1:
+#         one = len(exception1[key])
+#         two = len(exception2[key])
+#         counting_element_type=key
+#         dictionary[key]= one-two
+#     for key,vals in dictionary.items():
+#             print key,"---",vals
+#     return dictionary
 
 
 def compare_implicitly_wait(implicitly_wait1, implicitly_wait2):
@@ -176,53 +174,53 @@ def compare_implicitly_wait(implicitly_wait1, implicitly_wait2):
     one = len(implicitly_wait1)
     two = len(implicitly_wait2)
     return one-two
-
-def do_all(data1,data2):
-
-
-    processed_data1, get1, exception1, implicitly_wait1 = get_element_dict(data1)
-    processed_data2, get2, exception2, implicitly_wait2 = get_element_dict(data2)
-    print_and_process(data1=processed_data1, data2=processed_data2)
-    reorder_list, changed_list, deleted_list, added_list = print_and_process(processed_data1, processed_data2)
-    total_reorder = Counter(reorder_list)
-    total_changed = Counter(changed_list)
-    reorder = print_accordance("reorder", total_reorder)
-    changed = print_accordance("changed", total_changed)
-    deleted = print_accordance("deleted", deleted_list)
-    added   = print_accordance("added", added_list)
-    compare_get(get1, get2)
-    compare_exception(exception1, exception2)
-    implicit_wait_diff=compare_implicitly_wait(implicitly_wait1, implicitly_wait2)
-    print "implicitWait diff: ",implicit_wait_diff
-    print "\n"
-
-    print "======================================= CHANGED =============================================================="
-    child_dict={}
-    Element_dict={}
-    for key in changed:
-        key_title_list=[]
-        key_title_list.append(key.title())
-        for value in changed[key]:
-            print "changed" ,key ,"using" ,value, ":" ,changed[key][value]
-            if key.startswith("findChild"):
-                child_dict[value]=changed[key][value]
-
-    print "changed dict:", changed
-
-    print "Changed_children_dict:",child_dict
-    print "Element_dict:", Element_dict
-    #
-    # print "======================================= ADDED =============================================================="
-    # for key in added:
-    #     for value in added[key]:
-    #         if added[key][value]!="0":
-    #             print "added" ,key ,"using" ,value, ":" ,added[key][value]
-    #
-    # print "======================================= DELETED =============================================================="
-    # for key in deleted:
-    #     for value in deleted[key]:
-    #         if deleted[key][value]!="0":
-    #             print "deleted" ,key ,"using" ,value, ":" ,deleted[key][value]
+#
+# def do_all(data1,data2):
+#
+#
+#     processed_data1, get1, exception1, implicitly_wait1 = get_element_dict(data1)
+#     processed_data2, get2, exception2, implicitly_wait2 = get_element_dict(data2)
+#     print_and_process(data1=processed_data1, data2=processed_data2)
+#     reorder_list, changed_list, deleted_list, added_list = print_and_process(processed_data1, processed_data2)
+#     total_reorder = Counter(reorder_list)
+#     total_changed = Counter(changed_list)
+#     reorder = print_accordance("reorder", total_reorder)
+#     changed = print_accordance("changed", total_changed)
+#     deleted = print_accordance("deleted", deleted_list)
+#     added   = print_accordance("added", added_list)
+#     compare_get(get1, get2)
+#     compare_exception(exception1, exception2)
+#     implicit_wait_diff=compare_implicitly_wait(implicitly_wait1, implicitly_wait2)
+#     print "implicitWait diff: ",implicit_wait_diff
+#     print "\n"
+#
+#     print "======================================= CHANGED =============================================================="
+#     child_dict={}
+#     Element_dict={}
+#     for key in changed:
+#         key_title_list=[]
+#         key_title_list.append(key.title())
+#         for value in changed[key]:
+#             print "changed" ,key ,"using" ,value, ":" ,changed[key][value]
+#             if key.startswith("findChild"):
+#                 child_dict[value]=changed[key][value]
+#
+#     print "changed dict:", changed
+#
+#     print "Changed_children_dict:",child_dict
+#     print "Element_dict:", Element_dict
+#     #
+#     # print "======================================= ADDED =============================================================="
+#     # for key in added:
+#     #     for value in added[key]:
+#     #         if added[key][value]!="0":
+#     #             print "added" ,key ,"using" ,value, ":" ,added[key][value]
+#     #
+#     # print "======================================= DELETED =============================================================="
+#     # for key in deleted:
+#     #     for value in deleted[key]:
+#     #         if deleted[key][value]!="0":
+#     #             print "deleted" ,key ,"using" ,value, ":" ,deleted[key][value]
 
 
 def merge_dictionary(contents):
@@ -252,6 +250,84 @@ def merge_dictionary(contents):
 
     return dictionary
 
+
+def compare_all(data1, data2):
+    # processed_data1, get1, exception1, implicitly_wait1 = get_element_dict(data1)
+    processed_data1, implicitly_wait1 = get_element_dict(data1)
+    # processed_data2, get2, exception2, implicitly_wait2 = get_element_dict(data2)
+    processed_data2, implicitly_wait2 = get_element_dict(data2)
+    reorder_list, changed_list, deleted_list, added_list = print_and_process(processed_data1, processed_data2)
+    total_reorder = Counter(reorder_list)
+    total_changed = Counter(changed_list)
+    reorder = merge_dictionary(print_accordance("reorder", total_reorder))
+    changed = merge_dictionary(print_accordance("changed", total_changed))
+    deleted = merge_dictionary(print_accordance("deleted", deleted_list))
+    added   = merge_dictionary(print_accordance("added", added_list))
+    # get_diff = compare_get(get1, get2)
+    # exception_diff = compare_exception(exception1, exception2)
+    implicit_wait_diff = compare_implicitly_wait(implicitly_wait1, implicitly_wait2)
+    dictionary = {#"reorder": reorder,
+                  "changed": changed,
+                  "deleted": deleted,
+                  "added": added,
+                  # "getDiff": get_diff,
+                  # "exception": exception_diff,
+                  "implicitWaitdiff": implicit_wait_diff
+    }
+    return dictionary
+
+
+def process_data_for_csv(all_dictionary):
+    dictionary = {}
+    for item, elementdict in all_dictionary.items():
+        if item in ["reorder", "changed", "deleted", "added"]:
+            for key, value in elementdict.items():
+                # proces the data according to column name
+                for element in value:
+                    title = element.replace(' ', '')
+                    # Marging changed, added, deleteda
+                    if dictionary.get(title) is None:
+                        dictionary[title] = value[element]
+                    else:
+                        past_value = int(dictionary[title])
+                        dictionary[title] = past_value + int(value[element])
+
+        if item == "exception":
+            for key, value in elementdict.items():
+                dictionary.update({key+"Diff": value})
+        if item in ["getDiff", "implicitWaitdiff"]:
+            dictionary[item] = elementdict
+
+    return dictionary
+
+
+def write_in_csv(content_list, fields,csv_filename):
+    print csv_filename
+    try:
+        with open('/Users/adityanisal/Dropbox/Phase2-CSV-outputs/'+csv_filename+'.csv', 'a') as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=fields)
+            writer.writeheader()
+            for dictionary in content_list:
+                writer.writerow(dictionary)
+    except IOError:
+        print "------------ERROR in printing CSV------------"
+fields = [
+    "xpath",
+    "partiallinktext",
+    "classname",
+    "linktext",
+    "name",
+    "cssselector",
+    "tagname",
+    "id",
+    # "getDiff",
+    # "sendKeysToElementDiff",
+    # "clickElementDiff",
+    "implicitWaitdiff",
+    # "setTimeoutDiff"
+    ]
+
+
 def get_all_processed_contents(major_version_database, ref_sessionId_table_name, comp_sessionId_table_name):
     try:
         list_of_ref_sessionIds= connect_mysql.select_phase2_major_version_database(major_version_database, ref_sessionId_table_name)
@@ -274,15 +350,17 @@ def get_all_processed_contents(major_version_database, ref_sessionId_table_name,
         for i in rows_in_comp_sessionId_table:
             ref_action_file_data = extract_p2_action_file_contents(list_of_ref_sessionIds[i])
             comp_action_file_data = extract_p2_action_file_contents(list_of_comp_sessionIds[i])
-            print "******************************************** Test #: ",i, "******************************************** \n"
-            print "SessionID ", list_of_ref_sessionIds[i], " VS ", list_of_comp_sessionIds[i], "\n"
+            # print "******************************************** Test #: ",i, "******************************************** \n"
+            # print "SessionID ", list_of_ref_sessionIds[i], " VS ", list_of_comp_sessionIds[i], "\n"
             all_ref_action_file_data = all_ref_action_file_data + '\n' + ref_action_file_data
             all_comp_action_file_data = all_comp_action_file_data + '\n' + comp_action_file_data
+
+        print all_ref_action_file_data
         all_dictionary = compare_all(all_ref_action_file_data, all_comp_action_file_data)
         processed_data_csv = process_data_for_csv(all_dictionary)
         all_contents.append(processed_data_csv)
         print "\n"
-        do_all(ref_action_file_data,comp_action_file_data)
+        # do_all(ref_action_file_data,comp_action_file_data)
         print "\n"
         return all_contents,csv_filename
 
@@ -290,105 +368,41 @@ def get_all_processed_contents(major_version_database, ref_sessionId_table_name,
         print "#################################################### TABLE ERROR: Please check if given reference table", ref_sessionId_table_name,  "and comparable table exist", comp_sessionId_table_name, "########################################################"
 
 
-def compare_all(data1, data2):
-    processed_data1, get1, exception1, implicitly_wait1 = get_element_dict(data1)
-    processed_data2, get2, exception2, implicitly_wait2 = get_element_dict(data2)
-    reorder_list, changed_list, deleted_list, added_list = print_and_process(processed_data1, processed_data2)
-    total_reorder = Counter(reorder_list)
-    total_changed = Counter(changed_list)
-    reorder = merge_dictionary(print_accordance("reorder", total_reorder))
-    changed = merge_dictionary(print_accordance("changed", total_changed))
-    deleted = merge_dictionary(print_accordance("deleted", deleted_list))
-    added   = merge_dictionary(print_accordance("added", added_list))
-    get_diff = compare_get(get1, get2)
-    exception_diff = compare_exception(exception1, exception2)
-    implicit_wait_diff = compare_implicitly_wait(implicitly_wait1, implicitly_wait2)
-    dictionary = {#"reorder": reorder,
-                  "changed": changed,
-                  "deleted": deleted,
-                  "added": added,
-                  # "getDiff": get_diff,
-                  "exception": exception_diff,
-                  "implicitWaitdiff": implicit_wait_diff
-    }
-    return dictionary
-
-
-def process_data_for_csv(all_dictionary):
-    dictionary = {}
-    for item, elementdict in all_dictionary.items():
-        if item in ["reorder", "changed", "deleted", "added"]:
-            for key, value in elementdict.items():
-                # proces the data according to column name
-                for element in value:
-                    title = element.replace(' ', '')
-                    # Marging changed, added, deleted
-                    if dictionary.get(title) is None:
-                        dictionary[title] = value[element]
-                    else:
-                        past_value = int(dictionary[title])
-                        dictionary[title] = past_value + int(value[element])
-
-        if item == "exception":
-            for key, value in elementdict.items():
-                dictionary.update({key+"Diff": value})
-        if item in ["getDiff", "implicitWaitdiff"]:
-            dictionary[item] = elementdict
-
-    return dictionary
-
-
-def write_in_csv(content_list, fields,csv_filename):
-    print csv_filename
-    try:
-        with open('/Users/adityanisal/Dropbox/Phase2-CSV-outputs/'+csv_filename+'.csv', 'w') as csvfile:
-            writer = csv.DictWriter(csvfile, fieldnames=fields)
-            writer.writeheader()
-            for dictionary in content_list:
-                writer.writerow(dictionary)
-    except IOError:
-        print "------------ERROR in printing CSV------------"
-fields = [
-    "xpath",
-    "partiallinktext",
-    "classname",
-    "linktext",
-    "name",
-    "cssselector",
-    "tagname",
-    "id",
-    # "getDiff",
-    "sendKeysToElementDiff",
-    "clickElementDiff",
-    "implicitWaitdiff",
-    # "setTimeoutDiff"
-    ]
-
+p2_bedrock_database='backup_phase_two_bedrock_sids'
+bedrock_reference_version_sessionId_table= 'sessionids_mv2_2015_10_01'
+bedrock_compare_version_sessionId_table= 'sessionids_mv2_2015_10_15'
 
 
 p2_fireplace_database='backup_phase_two_fireplace_sids'
-fireplace_mv1_reference_version_sessionId_table='sessionids_mv2_p2_2015_04_14_2'
-fireplace_mv1_compare_version_sessionId_table='sessionids_mv2_p2_2015_04_28'
+fireplace_reference_version_sessionId_table= 'sessionids_mv3_p2_mv4_2015_11_24'
+fireplace_compare_version_sessionId_table= 'sessionids_mv3_p2_mv4_2016_01_12'
 
 
 p2_amo_database='backup_phase_two_amo_sids'
-amo_mv1_reference_version_sessionId_table='sessionids_mv1_2015_10_08'
-amo_mv1_compare_version_sessionId_table='sessionids_mv1_2015_10_22_'
-
-p2_bedrock_database='backup_phase_two_bedrock_sids'
-bedrock_mv1_reference_version_sessionId_table='sessionids_mv1_2015_03_30'
-bedrock_mv1_compare_version_sessionId_table='sessionids_mv1_2015_04_10'
-
-
-p2_bedrock_database='backup_phase_two_bedrock_sids'
-bedrock_mv1_reference_version_sessionId_table='sessionids_mv1_2015_03_30'
-bedrock_mv1_compare_version_sessionId_table='sessionids_mv1_2015_04_10'
-
+amo_reference_version_sessionId_table= 'sessionids_mv1_2015_10_08'
+amo_compare_version_sessionId_table= 'sessionids_mv1_2015_10_22_'
 
 p2_jenkins_database='backup_phase_two_jenkins_sids'
-jenkins_mv1_reference_version_sessionId_table='sessionids_phase2_1_623'
-jenkins_mv1_compare_version_sessionId_table='sessionids_phase2_1_623'
+jenkins_reference_version_sessionId_table= 'sessionids_phase2_1_633'
+jenkins_compare_version_sessionId_table= 'sessionids_phase2_1_635'
 
-connect_mysql = Phase2MysqlPython('localhost', 'root', '', p2_amo_database)
-content_list,csv_filename = get_all_processed_contents('amo_mv1',amo_mv1_reference_version_sessionId_table,amo_mv1_compare_version_sessionId_table)
-write_in_csv(fields=fields, content_list=content_list,csv_filename="AMO-TEST-Less-Columns")
+connect_mysql = Phase2MysqlPython('localhost', 'root', '', p2_bedrock_database)
+content_list,csv_filename = get_all_processed_contents('bedrock_mv1', bedrock_reference_version_sessionId_table, bedrock_compare_version_sessionId_table)
+write_in_csv(fields=fields, content_list=content_list,csv_filename="TEST-LESS-COLUMNS-march17")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -2,19 +2,20 @@
 # -*- coding: utf-8 -*-
 
 # Description: Takes as input sessionIds of reference (major) version and corresponding minor versions.
-#              For each pair of reference and comparable sessionId, parses as well as compares corresponding action files states.
-#              Outputs state-level differences GUI-level differences
+    # For each pair of reference and comparable sessionId, parses as well as compares corresponding action files states.
+    # Takes as input all sessionIds list (from MySQL table) for two minor versions.
+    # Outputs state-level differences GUI-level differences
 # Requirements:
-# ImageMagick's command line 'convert utility: http://www.imagemagick.org/script/convert.php
-# Installation: http://www.imagemagick.org/script/binary-releases.php
-# Ubuntu: sudo apt-get install imagemagick
-# OS X: brew install imagemagick
-# Requires to be run inside Python virtualenvironment. All infos: http://docs.python-guide.org/en/latest/dev/virtualenvs/)
-# Installation: $ pip install virtualenv
-# Create a virtual environment in the project directory: $ virtualenv venv
-# Activate a virtual environment: $ source venv/bin/activate
-# All additional requirements are specified in ./python_scripts/requirements.txt.
-# To install the requirements, simply run '$ pip install -r requirements.txt'
+    # ImageMagick's command line 'convert utility: http://www.imagemagick.org/script/convert.php
+        # Installation: http://www.imagemagick.org/script/binary-releases.php
+        # Ubuntu: sudo apt-get install imagemagick
+        # OS X: brew install imagemagick
+    # Requires to be run inside Python virtualenvironment. All infos: http://docs.python-guide.org/en/latest/dev/virtualenvs/)
+        # Installation: $ pip install virtualenv
+        # Create a virtual environment in the project directory: $ virtualenv venv
+        # Activate a virtual environment: $ source venv/bin/activate
+    # All additional requirements are specified in ./python_scripts/requirements.txt.
+        # To install the requirements, simply run '$ pip install -r requirements.txt'
 
 import re, os, platform
 import subprocess, sys
@@ -25,7 +26,16 @@ homedir = os.environ['HOME']  # home directory of user
 filename = os.path.basename(__file__)  # name of current file
 osplatform = platform.system()  # current OS platform
 
-############################################# H E L P - M E N U  #############################################
+# Directory in which all output files are to be stored. If desired, 'output_file_directory' can be changed to preferred directory.
+output_file_directory = homedir + '/' + 'PythonScriptsOutput' + '/'
+check_output_dir_exists = os.path.isdir(output_file_directory)
+try:
+    if check_output_dir_exists is False:
+        os.mkdir(output_file_directory)
+except OSError:
+    print "Error while creating output directory"
+
+############################################# Present help menu on the CLI  #############################################
 
 # Presents help menu to the user to illustrate usage options
 all_arguments = sys.argv
@@ -37,13 +47,18 @@ try:
         100 * '-'), '\n', "Sample inputs and required parameters:", '\n', (100 * '-')
         print  "\nInput the information (one-by-one) as following:"
         print "1. SessionIds database name for the chosen application: jenkins_plugins_sessionIDs"
-        print "## For all database names, refer to './sessionIds_database_names.txt'"
+        print "Each application has a separate database in which SessionIds for each application version are stored as a MySQL table.", '\n',\
+            "## For all database names, refer to './sessionIds_database_names.md'"
         print "\n2. SessionIds table name for the desired reference (major) version: sessionids_1_609"
-        print "## For all table names, refer to './sessionIds_table_names.txt'"
+        print "## For all table names, refer to './sessionIds_table_names.md'"
         print "\n3. SessionIds table names for the desired comparable (minor) version: sessionids_1_611"
-        print "## For all table names, refer to './sessionIds_table_names.txt'"
+        print "## Multiple table names can be provided with a space in between."
+        print "   ### Example as following: sessionids_1_611 sessionids_1_613 sessionids_1_615"
+        print "   ### For all table names, refer to './sessionIds_table_names.md'"
         print "\n4. Directory name in which action files are stored (including trailing slashes): %s/ActionFiles/"  % (homedir)
         print "## Example actions file: %s/ActionFiles/707231c1-b9b3-4d25-8343-ed230be6c993/actions.txt"  % (homedir)
+        print "All actions.txt files from `{sessionId}.tar.xz` files can be extracted using following command", '\n',\
+            "$ for file in *tar.xz; do gtar -xvf $file -C %s/ActionFiles/ --wildcards */actions.txt; done" % (homedir)
         print "\n5. Directory name in which screenshot files are stored (including trailing slashes): %s/ScreenShots/"""  % (homedir)
         print "## Examples:"
         print "-- Screenshots directory: %s/ScreenShots/sessionId(s)/" % (homedir)
@@ -55,10 +70,14 @@ try:
                  ├── .
                  ├── .
                  └── f22b4a1a-fdd5-45f5-8126-4f66789d6e7f.png"""
-        print """\n6. Application's major version: jenkins_plugins_mv3 \n## For all application major version names, refer to './application_major_version_names.txt'
-                 \n7. Application name (as prefix for output files): JenkinsPlugins. \n## Example output file: JenkinsPlugins_1_609_1_611_Results.txt
-                 \n============ For additional details, please refer to README.md ============ """, '\n', (100 * '-')
-        print (100 * '-')
+        print "All screenshots from `{sessionId}.tar.xz` files can be extracted using following command", '\n',\
+            "$ for file in *tar.xz; do gtar -xvf $file -C %s/ScreenShots/ --wildcards */screenshots; done" % (homedir)
+        print """\n6. Application's major version: jenkins_plugins_mv3
+## Used for selecting/deselecting rows of a MySQL table for a particular version.
+## For all application major version names, refer to './application_major_version_names_for_database_selection.md' and './mysql_connection.py'
+                 \n7. Application name (as prefix for output files): JenkinsPlugins
+## Example output file: JenkinsPlugins_1_609_1_611_Results.txt
+[Note] All output files are stored in directory %s \nThis directory can be changed with parameter 'output_file_directory' from within the scripts.""" % (output_file_directory), '\n', (100 * '-')
         exit()
 except IndexError:
     pass
@@ -72,6 +91,21 @@ print (100 * '-')
 print "For executing this script: python %s" % filename
 print "\nFor help regarding input parameters, please execute: python %s --help" % filename
 print "The --help option presents detailed information about the usage, including examples."
+print (100 * '-')
+print """# Description: Takes as input sessionIds of reference (major) version and corresponding minor versions.
+    # For each pair of reference and comparable sessionId, parses as well as compares corresponding action files states.
+    # Outputs state-level differences GUI-level differences
+# Requirements:
+    # ImageMagick's command line 'convert utility: http://www.imagemagick.org/script/convert.php
+        # Installation: http://www.imagemagick.org/script/binary-releases.php
+        # Ubuntu: sudo apt-get install imagemagick
+        # OS X: brew install imagemagick
+    # Requires to be run inside Python virtualenvironment. All infos: http://docs.python-guide.org/en/latest/dev/virtualenvs/
+        # Installation: $ pip install virtualenv
+        # Create a virtual environment in the project directory: $ virtualenv venv
+        # Activate a virtual environment: $ source venv/bin/activate
+    # All additional requirements are specified in ./python_scripts/requirements.txt.
+        # To install the requirements, simply run '$ pip install -r requirements.txt' """
 print (100 * ' '), '\n', (44 * '*'), "User Inputs", (44 * '*')
 
 #############################################  Get Inputs from User #############################################
@@ -79,7 +113,7 @@ def get_database_input():
     """
     Gets MySQL sessionId database name input from the user.
 
-    For all database names, refer to './sessionIds_database_names.txt'
+    For all database names, refer to './sessionIds_database_names.md'
     Example database name: amo_sessionIDs
     """
     # Get input through 'raw_input'
@@ -101,11 +135,11 @@ def get_ref_table_name_input():
     """
     Gets MySQL sessionId table name input for reference major version from the user.
 
-    For all table names, refer to './sessionIds_table_names.txt'
+    For all table names, refer to './sessionIds_table_names.md'
     Example table name: sessionids_2015_04_25
     """
     # Get input through 'raw_input'
-    ref_table_name = raw_input("\n2. SessionIds table name for the desired reference version: ")
+    ref_table_name = raw_input("\n2. SessionIds table name for the desired reference (major) version: ")
     # Connect to MySQL database
     connect_mysql_table = MysqlPython('localhost', 'root', '', database_name)
     # Check if SQL table exists
@@ -124,7 +158,7 @@ def get_comparable_versions_table_list_input():
     """
     Gets MySQL sessionId table name input from the user.
 
-    For all table names, refer to './sessionIds_table_names.txt'
+    For all table names, refer to './sessionIds_table_names.md'
     Example table name: sessionids_2015_04_25
     """
     # Get input through 'raw_input' as list of MySQL table names
@@ -193,7 +227,7 @@ while screenshot_dir_exists is False:
     print "Please re-enter the valid actions files directory."
     screenshot_dir_exists, screenshot_files_directory = get_screenshots_files_directory()
 
-# Get major version of the application. Example: amo_mv1. For all application major version names, refer to './application_major_version_names.txt'
+# Get major version of the application. Example: amo_mv1. For all application major version names, refer to './application_major_version_names_for_database_selection.md'
 applications_major_version_database = raw_input("\n6. Please enter the application's major version: ")
 # Fabricate output file name using application name as prefix, such as JenkinsPlugins.
 application_name = raw_input("\n7. Please enter the application name: ")
@@ -208,16 +242,15 @@ def extract_action_file_contents(sessionId, action_file_dir):
     :param sessionId: Browser SessionId of a test.
     :param action_file_dir: Directory where actions.txt files are stored.
     :return: All contents of action.txt file
-    :raises: File read error if actions.txt file for given sessionId does not exist in given directory.
 
     Example:
         Sample action_file_dir (on OS X): /Users/$USER/ActionFiles/707231c1-b9b3-4d25-8343-ed230be6c993/actions.txt
     """
     # Read contents of actions.txt files
     try:
-        file_content = open(action_file_dir + '/' + sessionId + '/' + 'actions.txt').read()
-        return file_content
-    except IOError:
+        file_contents = open(action_file_dir + '/' + sessionId + '/' + 'actions.txt').read()
+        return file_contents
+    except:
         print "==== Error! Please check if following actions file exists : ", action_file_dir + '/' + sessionId + '/' + 'actions.txt', "===="
 
 
@@ -333,25 +366,25 @@ def do_comparison(screenshots_directory, output_files_directory, app_name, ref_s
 
         # Check which OS platform is being used for determining the full path of Imagemagick convert.
         #
-        # if osplatform == 'Darwin': # Mac OS X
-        #     imagemagick_convert_path = "/usr/local/bin/convert"
-        # elif osplatform == 'Linux': # Linux distributions
-        #     imagemagick_convert_path = "/usr/bin/convert"
-        #
-        # num = '%d' % (test_number)
-        # imgDir = screenshots_directory
-        # outDir = output_files_directory + '/'
-        # outFileName = app_name  + '_'+ ref_sessionId_table_name[11:] + '_' + comp_sessionId_table_name[11:] + '_Test_' + num  + '.png'
-        # outFile = outDir + outFileName
-        # ref_screenshot = imgDir + ref_sessionId + '/screenshots/'+ id_of_action_in_ref_sessionId_action_file[-1] + '.png'
-        # comp_screenshot = imgDir + comp_sessionId + '/screenshots/'+ id_of_action_in_comp_sessionId_action_file[-1] + '.png'
-        # try:
-        #     p = subprocess.Popen([imagemagick_convert_path, "+append", ref_screenshot ,comp_screenshot, outFile],stdout=subprocess.PIPE)
-        #     return_code = p.wait()
-        #     if return_code > 0:
-        #         raise Exception('==== Imagemagick convert error ! ====')
-        # except OSError:
-        #     print "==== There was an error in printing out the file %s ! ===="
+        if osplatform == 'Darwin': # Mac OS X
+            imagemagick_convert_path = "/usr/local/bin/convert"
+        elif osplatform == 'Linux': # Linux distributions
+            imagemagick_convert_path = "/usr/bin/convert"
+
+        num = '%d' % (test_number)
+        imgDir = screenshots_directory
+        outDir = output_files_directory + '/'
+        outFileName = app_name  + '_'+ ref_sessionId_table_name[11:] + '_' + comp_sessionId_table_name[11:] + '_Test_' + num  + '.png'
+        outFile = outDir + outFileName
+        ref_screenshot = imgDir + ref_sessionId + '/screenshots/'+ id_of_action_in_ref_sessionId_action_file[-1] + '.png'
+        comp_screenshot = imgDir + comp_sessionId + '/screenshots/'+ id_of_action_in_comp_sessionId_action_file[-1] + '.png'
+        try:
+            p = subprocess.Popen([imagemagick_convert_path, "+append", ref_screenshot ,comp_screenshot, outFile],stdout=subprocess.PIPE)
+            return_code = p.wait()
+            if return_code > 0:
+                raise Exception('==== Imagemagick convert error ! ====')
+        except OSError:
+            print "==== There was an error in printing out the file %s ! ===="
 
 
         # Compare state-level actions for reference major version and comparable minor version
@@ -485,14 +518,8 @@ def generate_output(screenshots_directory, output_files_directory, major_version
         print "==== For additional details please refer to ./mysql_connection.py ===="
 
 
-# Directory in which all output files are to be stored. If desired, 'output_file_directory' can be changed to preferred directory.
-output_file_directory = homedir + '/' + 'PythonScriptsOutput'
-check_output_dir_exists = os.path.isdir(output_file_directory)
-try:
-    if check_output_dir_exists is False:
-        os.mkdir(output_file_directory)
-except OSError:
-    print "Error while creating output directory"
+
+######################## Database connection, function calls and printing the result to console ###########################
 
 # Connect to MySQL database in which sessionIds are stored
 connect_mysql = MysqlPython('localhost', 'root', '', database_name)

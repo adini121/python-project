@@ -211,18 +211,18 @@ def do_all(data1,data2):
 
     print "Changed_children_dict:",child_dict
     print "Element_dict:", Element_dict
-    #
-    # print "======================================= ADDED =============================================================="
-    # for key in added:
-    #     for value in added[key]:
-    #         if added[key][value]!="0":
-    #             print "added" ,key ,"using" ,value, ":" ,added[key][value]
-    #
-    # print "======================================= DELETED =============================================================="
-    # for key in deleted:
-    #     for value in deleted[key]:
-    #         if deleted[key][value]!="0":
-    #             print "deleted" ,key ,"using" ,value, ":" ,deleted[key][value]
+
+    print "======================================= ADDED =============================================================="
+    for key in added:
+        for value in added[key]:
+            if added[key][value]!="0":
+                print "added" ,key ,"using" ,value, ":" ,added[key][value]
+
+    print "======================================= DELETED =============================================================="
+    for key in deleted:
+        for value in deleted[key]:
+            if deleted[key][value]!="0":
+                print "deleted" ,key ,"using" ,value, ":" ,deleted[key][value]
 
 
 def merge_dictionary(contents):
@@ -384,9 +384,11 @@ fields = [
 
 
 p2_fireplace_database='backup_phase_two_fireplace_sids'
-fireplace_mv1_reference_version_sessionId_table='sessionids_mv2_p2_2015_04_14_2'
-fireplace_mv1_compare_version_sessionId_table='sessionids_mv2_p2_2015_04_28'
 
-connect_mysql = Phase2MysqlPython('localhost', 'root', '', p2_fireplace_database)
-content_list,csv_filename = get_all_processed_contents('fireplace_mv1',fireplace_mv1_reference_version_sessionId_table,fireplace_mv1_compare_version_sessionId_table)
-write_in_csv(fields=fields, content_list=content_list,csv_filename=csv_filename)
+p2_amo_database='backup_phase_two_amo_sids'
+amo_mv1_reference_version_sessionId_table='sessionids_mv0_2015_04_16'
+amo_mv1_compare_version_sessionId_table='sessionids_mv0_2015_04_16'
+
+connect_mysql = Phase2MysqlPython('localhost', 'root', '', p2_amo_database)
+content_list,csv_filename = get_all_processed_contents('amo_mv1',amo_mv1_reference_version_sessionId_table,amo_mv1_compare_version_sessionId_table)
+write_in_csv(fields=fields, content_list=content_list,csv_filename="Garbage")

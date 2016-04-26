@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Description: Extracts and counts the specified actions from actions.txt file and prints them to CSV file.
+# Description: Extracts and counts the specified actions from actions.txt files at test-suite level and prints them (by appending) to a CSV file.
+    # Takes as input all sessionIds list (from MySQL table) for (major) versions.
 # Requirements:
     # Requires to be run inside Python virtualenvironment. All infos: http://docs.python-guide.org/en/latest/dev/virtualenvs/)
         # Installation: $ pip install virtualenv
@@ -17,8 +18,16 @@ from mysql_connection import MysqlPython
 homedir = os.environ['HOME'] # home directory of user
 filename = os.path.basename(__file__) # name of current file
 
-############################################# H E L P - M E N U  #############################################
+# Directory in which all output files are to be stored. If desired, 'output_file_directory' can be changed to preferred directory.
+output_file_directory = homedir + '/' + 'PythonScriptsOutput' + '/'
+check_output_dir_exists = os.path.isdir(output_file_directory)
+try:
+    if check_output_dir_exists is False:
+        os.mkdir(output_file_directory)
+except OSError:
+    print "Error while creating output directory"
 
+############################################# Present help menu on the CLI  #############################################
 
 # Presents help menu to the user to illustrate usage options
 all_arguments = sys.argv
@@ -28,30 +37,47 @@ try:
         print (100 * '='),'\n', (40 * ' '), "H E L P - M E N U", (40 * ' '),'\n', (100 * '-')
         print "usage(): python %s" % filename ,'\n', (100 * '-') ,'\n', "Sample inputs and required parameters:" ,'\n', (100 * '-')
         print  """\nInput the information (one-by-one) as following:
-                 \n1. SessionIds database name for the chosen application: amo_sessionIDs \n## For all database names, refer to './sessionIds_database_names.txt'
-                 \n2. SessionIds table name for the desired version: sessionids_2015_04_25 \n## For all database names, refer to './sessionIds_table_names.txt'
-                 \n3. Directory name in which action files are stored (including trailing slashes): %s/ActionFiles/ \n## Example actions file: %s/ActionFiles/707231c1-b9b3-4d25-8343-ed230be6c993/actions.txt
-                 \n4. Application's major version: amo_mv1 \n## For all application major version names, refer to './application_major_version_names.txt'
-                 \n5. Output filename: mozilla-addons-mv1. \n## Example output file: mozilla-addons-mv1.csv
-                 \n============ For additional details, please refer to README.md ============ """ % (homedir,homedir), '\n',(100 * '-')
+                 \n1. SessionIds database name for the chosen application: amo_sessionIDs
+Each application has a separate database in which SessionIds for each application version are stored as a MySQL table. \n## For all database names, refer to './sessionIds_database_names.md'
+                 \n2. SessionIds table name for the desired (major) version: sessionids_2015_04_25 \n## For all table names, refer to './sessionIds_table_names.md'
+                 \n3. Directory name in which action files are stored (including trailing slashes): %s/ActionFiles/
+All actions.txt files from `{sessionId}.tar.xz` files can be extracted using following command \n$ for file in *tar.xz; do gtar -xvf $file -C %s/ActionFiles/ --wildcards */actions.txt; done \n## Example actions file: %s/ActionFiles/707231c1-b9b3-4d25-8343-ed230be6c993/actions.txt
+                 \n4. Application's major version: amo_mv1 \n## Used for selecting/deselecting rows of a MySQL table for a particular version.
+## For all application major version names, refer to './application_major_version_names_for_database_selection.md' and './mysql_connection.py'
+                 \n5. Output filename: amo-mv1-test-suite-counting. \n## Example output file: amo-mv1-test-suite-counting.csv
+[Note] All output files are stored in directory %s \nThis directory can be changed with parameter 'output_file_directory' from within the scripts.""" % (homedir,homedir,homedir,output_file_directory), '\n',(100 * '-')
         exit()
 except IndexError:
     pass
 
+############################################# Present main menu on the CLI  #############################################
+
+# Presents main menu to the user to illustrate possible options
 print (100 * '=')
 print (40 * ' '), "M A I N - M E N U", (40 * ' ')
 print (100 * '-')
 print "For executing this script: python %s" % filename
 print "\nFor help regarding input parameters, please execute: python %s --help" % filename
 print "The --help option presents detailed information about the usage, including examples."
+print (100 * '-')
+print """# Description: Extracts and counts the specified actions from actions.txt files at test-suite level and prints them to CSV file.
+Takes as input all sessionIds list (from MySQL table) for (major) versions.
+# Requirements:
+    # Requires to be run inside Python virtualenvironment. All infos: http://docs.python-guide.org/en/latest/dev/virtualenvs/)
+        # Installation: $ pip install virtualenv
+        # Create a virtual environment in the project directory: $ virtualenv venv
+        # Activate a virtual environment: $ source venv/bin/activate
+    # All additional requirements are specified in ./python_scripts/requirements.txt.
+        # To install the requirements, simply run '$ pip install -r requirements.txt'"""
 print (100 * ' '), '\n', (44 * '*'), "User Inputs", (44 * '*')
 
 #############################################  Get Inputs from User #############################################
+
 def get_database_input():
     """
     Gets MySQL sessionId database name input from the user.
 
-    For all database names, refer to './sessionIds_database_names.txt'
+    For all database names, refer to './sessionIds_database_names.md'
     Example database name: amo_sessionIDs
     """
     # Get input through 'raw_input'
@@ -71,7 +97,7 @@ def get_table_name_input():
     """
     Gets MySQL sessionId table name input from the user.
 
-    For all table names, refer to './sessionIds_table_names.txt'
+    For all table names, refer to './sessionIds_table_names.md'
     Example table name: sessionids_2015_04_25
     """
      # Get input through 'raw_input'
@@ -107,14 +133,16 @@ while check_dir_exists is False:
     print "Please re-enter the valid actions files directory."
     check_dir_exists,action_files_directory = get_action_files_directory()
 
-# Get major version of the application. Example: amo_mv1. For all application major version names, refer to './application_major_version_names.txt'
+# Get major version of the application. Example: amo_mv1. For all application major version names, refer to './application_major_version_names_for_database_selection.md'
 # Get input through 'raw_input'
 applications_major_version_database = raw_input("\n4. Application's major version: ")
-# Get output file name, such as mozilla-addons-mv1. Example output file: mozilla-addons-mv1.csv
+# Get output file name, such as amo-mv1-test-suite-counting. Example output file: amo-mv1-test-suite-counting.csv
 # Get input through 'raw_input'
 output_file_name = raw_input("\n5. Output filename: ")
 
 print (100 * ' '), '\n', (41 * '*'), "Ongoing script execution", (41 * '*'), '\n'
+
+########################################## Start of the script's main logic ############################################
 
 def extract_action_file_contents(sessionId, action_file_dir):
     """
@@ -123,15 +151,14 @@ def extract_action_file_contents(sessionId, action_file_dir):
     :param sessionId: Browser SessionId of a test.
     :param action_file_dir: Directory where action files are stored.
     :return: All contents of action.txt file
-    :raises: File read error if actions.txt file for given sessionId does not exist in given directory.
 
     Example:
         Sample action_file_dir: /Users/$USER/ActionFiles/707231c1-b9b3-4d25-8343-ed230be6c993/actions.txt
     """
     # Read contents of actions.txt files
     try:
-        file_content = open(action_file_dir + '/' + sessionId + '/' + 'actions.txt').read()
-        return file_content
+        file_contents = open(action_file_dir + '/' + sessionId + '/' + 'actions.txt').read()
+        return file_contents
     except IOError:
         print "==== Error! Please check if following actions file exists : ", action_file_dir + '/' + sessionId + '/' + 'actions.txt', "===="
 
@@ -173,11 +200,11 @@ def count_by_action_type(file_contents):
     Parses the 'list of actions' returned by the function return_raw_actions().
 
     :param file_contents: All contents of action.txt file
-    :return: Two lists unique_findElement_list and other_webdriver_actions_list
+    :return: Two lists unique_element_locator_list and other_webdriver_actions_list
 
     Example:
         Sample output lists:
-        unique_findElement_list: {('findElement', 'css selector'): 82, ('findElement', 'xpath'): 55, ('findChildElement', 'xpath'): 22, ('findElements', 'xpath'): 11, ('findElements', 'css selector'): 7, ('findElement', 'name'): 1}
+        unique_element_locator_list: {('findElement', 'css selector'): 82, ('findElement', 'xpath'): 55, ('findChildElement', 'xpath'): 22, ('findElements', 'xpath'): 11, ('findElements', 'css selector'): 7, ('findElement', 'name'): 1}
         other_webdriver_actions: {'clickElement': 314, 'get': 252, 'sendKeysToElement': 128, 'implicitlyWait': 34}
     """
 
@@ -197,7 +224,7 @@ def count_by_action_type(file_contents):
     'implicitlyWait',
     'get']
 
-    findElement_list= []
+    element_locator_list= []
     other_webdriver_actions_list = []
 
     # Extracting specified actions from the list of actions
@@ -211,15 +238,15 @@ def count_by_action_type(file_contents):
             element = items[1].split(splitter)[1].split('",')[0]
             element_value = (element, value)
             tuple = (action, element_value)
-            findElement_list.append(tuple)
+            element_locator_list.append(tuple)
         elif action in other_webdriver_actions:
             other_webdriver_actions_list.append(action)
 
-    # Exclude repeated findElement calls to measure unique element locators
-    unique_findElement_list = [(x[0], x[1][0]) for x in set(findElement_list)]
+    # Exclude repeated element locator calls to measure unique element locators
+    unique_element_locator_list = [(x[0], x[1][0]) for x in set(element_locator_list)]
 
-    # return the two extracted lists
-    return dict(Counter(unique_findElement_list)), dict(Counter(other_webdriver_actions_list))
+    # return the two extracted lists (as dictionaries)
+    return dict(Counter(unique_element_locator_list)), dict(Counter(other_webdriver_actions_list))
 
 def merge_dictionary(contents):
     """
@@ -229,18 +256,19 @@ def merge_dictionary(contents):
     even the findElement(s) methods are used for locating structure based elements.
 
     :param contents: element locator actions dictionary
-    Example:
-        contents: {'findElements': {'css selector': 7, 'xpath': 11, 'tag name': '0'}, 'findChildElements': {'css selector': '0', 'xpath': '0', 'tag name': '0'}, 'findElement': {'xpath': 55, 'partial link text': '0', 'class name': '0', 'link text': '0', 'name': 1, 'css selector': 82, 'tag name': '0', 'id': '0'}, 'findChildElement': {'css selector': '0', 'xpath': 22, 'tag name': '0'}}
+        Example:
+            contents: {'findElements': {'css selector': 7, 'xpath': 11, 'tag name': '0'}, 'findChildElements': {'css selector': '0', 'xpath': '0', 'tag name': '0'},
+            'findElement': {'xpath': 55, 'partial link text': '0', 'class name': '0', 'link text': '0', 'name': 1, 'css selector': 82, 'tag name': '0', 'id': '0'},
+            'findChildElement': {'css selector': '0', 'xpath': 22, 'tag name': '0'}}
     :return: dictionaries Element and childElement after merging
-    Example:
-        Merged dictionary:  {'ChildElement': {'css selector': 0, 'xpath': 22, 'tag name': 0},
-            'Element': {'xpath': 66, 'partial link text': '0', 'class name': '0', 'link text': '0', 'name': 1, 'css selector': 89, 'tag name': 0, 'id': '0'}}
+        Example:
+            Merged dictionary:  {'ChildElement': {'css selector': 0, 'xpath': 22, 'tag name': 0},
+                'Element': {'xpath': 66, 'partial link text': '0', 'class name': '0', 'link text': '0', 'name': 1, 'css selector': 89, 'tag name': 0, 'id': '0'}}
 
     """
 
     # Dictionary containing merged dictionaries ('findElement+findElements' to 'Element' dictionary
     # and 'findChildElement+findChildElements' to 'ChildElement' dictionary)
-
     dictionary = {
     'Element': {"css selector":"0", "xpath":"0", "tag name":"0", "name":"0", "class name":"0", "id":"0", "link text":"0",
                         "partial link text":"0"},
@@ -271,18 +299,21 @@ def merge_dictionary(contents):
 
 def process_data_for_csv(elementdict, exception):
     """
+    Processes the output data to be printed to a CSV file by trimming the whitespaces and arranging the data according to the column
+    names (headers) of the file. Outputs the entire data as a dictionary.
+
     :param elementdict: Element locator actions dictionary, which is returned from return_raw_actions() by get_dictionary()
     :param exception: WebDriver actions dictionary, which is returned from return_raw_actions() by get_dictionary()
     :return: Dictionary containing number of each element locator and webdriver action.
 
     Example:
-        Sample output dictionary: {'xpath': 66, 'Childcssselector': 0, 'name': 1, 'get': 252, 'Childxpath': 22, 'Childtagname': 0, 'clickElement': 314,
+        Sample output dictionary for the test-suite: {'xpath': 66, 'name': 1, 'get': 252, 'clickElement': 314,
                 'id': '0', 'classname': '0', 'cssselector': 89, 'sendKeysToElement': 128,
                 'linktext': '0', 'tagname': 0, 'partiallinktext': '0', 'implicitlyWait': 34}
     """
     dictionary = {}
     for key, value in elementdict.items():
-        # process the data according to column name
+        # process the data according to column name of the csv file
         for element in value:
             title = element.replace(' ', '')
             if dictionary.get(title):
@@ -319,6 +350,7 @@ def get_dictionary(file_contents):
       'clickElement': '0',
       'sendKeysToElement': '0'}
 
+    # Update both dictionaries according to the data obtained from actions.txt files
     findElement_count_dict,otherActions_count_dict=count_by_action_type(file_contents)
     for key, value in findElement_count_dict.items():
         dictionary[key[0]].update({key[1]: value})
@@ -341,22 +373,21 @@ def get_all_processed_contents(major_version_database, ref_sessionId_table_name,
     :param action_files_directory: Directory in which actions.txt files are stored.
     :return: List of all actions to be printed to CSV file
     """
-    action_files_dir = action_files_directory
 
     # Connect to MySQL database in which sessionIds are stored. SessionIds for each version are stored as a MySQL table. Return list of all sessionIds from this table.
     try:
         list_of_ref_sessionIds= connect_mysql.select_major_version_database(major_version_database, ref_sessionId_table_name)
-    except :
+    except:
         print "==== MySQL ERROR : Please check if the MySQL table name and major-version information is correct. ===="
         print "==== Database Table: ", ref_sessionId_table_name, " | ", "Major version: ", major_version_database, "===="
 
-    # Return actions for all the tests
+    # Return actions for the test-suite
     if list_of_ref_sessionIds:
         all_contents = []
         contents = ''
         rows_in_ref_sessionId_table = range(len(list_of_ref_sessionIds))
         for i in rows_in_ref_sessionId_table:
-            ref_action_file_contents = extract_action_file_contents(list_of_ref_sessionIds[i], action_files_dir)
+            ref_action_file_contents = extract_action_file_contents(list_of_ref_sessionIds[i], action_files_directory)
             contents = contents + ',\n' + ref_action_file_contents
         dictionary = get_dictionary(contents)
         all_contents.append(dictionary)
@@ -365,10 +396,11 @@ def get_all_processed_contents(major_version_database, ref_sessionId_table_name,
 
 def write_in_csv(content_list,out_file_name,output_file_directory):
     """
-    Writes (through appending) the count of element locator and WebDriver actions to an output CSV file.
+    Writes (through appending) the count of element locator and WebDriver actions of the entire test-suite to an output CSV file.
 
     :param content_list: Contents i.e. list of actions obtained from get_all_processed_contents()
     :param out_file_name: Name of the output CSV file
+    :param output_file_directory: Directory where the output files are to be stored
     :return: Result of writing (success or failure)
     """
     # Headers for printing to CSV file
@@ -384,28 +416,21 @@ def write_in_csv(content_list,out_file_name,output_file_directory):
                 for dictionary in content_list:
                     try:
                         writer.writerow(dictionary)
+                        success = True
                     except IOError:
-                        print "==================== Please check input to the CSV file ===================="
-                success = True
+                        print "==== Error while printing the output to file ===="
                 return success
         except IOError:
-            print "==================== ERROR: Filewrite error ===================="
+            print "==== IOError: Filewrite error ===="
+
+######################## Database connection, function calls and printing the result to console ###########################
 
 # Connect to MySQL database in which sessionIds are stored
 connect_mysql = MysqlPython('localhost', 'root', '', database_name)
 
-# Directory in which all output files are to be stored. If desired, 'output_file_directory' can be changed to preferred directory.
-output_file_directory = homedir + '/' + 'PythonScriptsOutput'
-check_output_dir_exists = os.path.isdir(output_file_directory)
-try:
-    if check_output_dir_exists is False:
-        os.mkdir(output_file_directory)
-except OSError:
-    print "Error while creating output directory"
-
 # Get all the data for counting and printing the number of element locators and webdriver actions
 content_list = get_all_processed_contents(applications_major_version_database, table_name, action_files_directory)
-# Print to CSV file
+# Print output to CSV file
 success = write_in_csv(content_list,output_file_name,output_file_directory)
 
 # Re-run message to run the program if unsuccessful

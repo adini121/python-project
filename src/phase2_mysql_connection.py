@@ -59,35 +59,35 @@ class Phase2MysqlPython(object):
         if phase2_major_version_database == 'fireplace_mv4':
             query = "SELECT session_id FROM %s where id != 3" % table
 
-        # """ Jenkins Core """
-        # if phase2_major_version_database == 'jenkins_core_mv1':
-        #     query = "SELECT session_id FROM %s where id != 12 and id != 18 and id != 19 and id != 20" % table
+        """ Jenkins Core """
+        if phase2_major_version_database == 'jenkins_mv1':
+            query = "SELECT session_id FROM %s" % table
+
+        if phase2_major_version_database == 'jenkins_core_mv2':
+            query = "SELECT session_id FROM %s where id != 3 and id != 6 and id != 7 and id !=16" % table
+
+        if phase2_major_version_database == 'jenkins_core_mv3':
+            query = "SELECT session_id FROM %s where id != 16 and id != 17" % table
+
+        if phase2_major_version_database == 'jenkins_core_mv4':
+            query = "SELECT session_id FROM %s where id != 17 and id != 18" % table
         #
-        # if phase2_major_version_database == 'jenkins_core_mv2':
-        #     query = "SELECT session_id FROM %s where id != 3 and id != 6 and id != 7 and id !=16" % table
-        #
-        # if phase2_major_version_database == 'jenkins_core_mv3':
-        #     query = "SELECT session_id FROM %s where id != 16 and id != 17" % table
-        #
-        # if phase2_major_version_database == 'jenkins_core_mv4':
-        #     query = "SELECT session_id FROM %s where id != 17 and id != 18" % table
-        #
-        # """ AMO """
-        # if phase2_major_version_database == 'amo_mv1': #MV1 starts at 2015_01_01
-        #     query = "SELECT session_id FROM %s where id != 4 and id != 5 and id != 6 and id != 7" % table
-        #
-        # if phase2_major_version_database == 'amo_mv2': #MV2 starts at 2015_04_25
-        #     query = "SELECT session_id FROM %s where id != 4 and id != 5 and id != 6 and id != 7" % table
-        #
-        # if phase2_major_version_database == 'amo_mv3': #MV3 starts at 2015_07_31
-        #     query = "SELECT session_id FROM %s where id != 3 and id != 4 and id != 5 and id != 6" % table
-        #
-        # """ Bedrock """
-        # if phase2_major_version_database == 'bedrock_mv2':
-        #     query = "SELECT session_id FROM %s where id != 30 and id != 57 and id != 58" % table
-        #
-        # if phase2_major_version_database == 'bedrock_mv1':
-        #     query = "SELECT session_id FROM %s where id !=53 and id != 54 and id != 25 and id != 30 and id != 58" % table
+        """ AMO """
+        if phase2_major_version_database == 'amo_mv1': #MV1 starts at 2015_01_01
+            query = "SELECT session_id FROM %s where id != 4 and id != 5 and id != 6 and id != 7" % table
+
+        if phase2_major_version_database == 'amo_mv2': #MV2 starts at 2015_04_25
+            query = "SELECT session_id FROM %s where id != 4 and id != 5 and id != 6 and id != 7" % table
+
+        if phase2_major_version_database == 'amo_mv3': #MV3 starts at 2015_07_31
+            query = "SELECT session_id FROM %s where id != 3 and id != 4 and id != 5 and id != 6" % table
+
+        """ Bedrock """
+        if phase2_major_version_database == 'bedrock_mv2':
+            query = "SELECT session_id FROM %s where id != 30 and id != 57 and id != 58" % table
+
+        if phase2_major_version_database == 'bedrock_mv1':
+            query = "SELECT session_id FROM %s where id !=53 and id != 54 and id != 25 and id != 30 and id != 58" % table
         #     #added failed ID rows, missing ID rows,
 
         self.__open()

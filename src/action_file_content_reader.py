@@ -1,4 +1,4 @@
-# from mysql_connection import MysqlPython
+from mysql_connection import MysqlPython
 #
 # connect_mysql = MysqlPython('localhost', 'root', '', 'jenkins_core_sessionIDs')
 #
@@ -109,6 +109,59 @@
 # # print dic1
 # # # print "\n"
 # # print dic2
+import re
+import csv
 
-str='fireplace_mv1'
-print str[:-4]
+from collections import Counter
+from phase2_mysql_connection import Phase2MysqlPython
+def extract_p2_action_file_contents(sessionId):
+    """ This function extracts the contents of action file , takes as input the sessionId and action files directory"""
+    p2_action_file_dir='/Users/adityanisal/Dropbox/PhaseTwoActionFiles/'
+    try:
+        file_content=open(p2_action_file_dir + sessionId + '.' + 'actions.txt').read()
+        # print file_content
+
+        return file_content
+
+    except:
+        print "======================================================== Following sessionID file does not exist : ", sessionId + '/' + 'actions.txt', "======================================================="
+
+# extract_action_file_contents("0ffb1801-a998-4c30-b54f-29c97cdec7ba")
+
+
+def get_all_processed_contents(major_version_database, ref_sessionId_table_name, comp_sessionId_table_name):
+    try:
+        list_of_ref_sessionIds= connect_mysql.select_phase2_major_version_database(major_version_database, ref_sessionId_table_name)
+    except IOError:
+        print "ERROR : Reference table does not exist :", ref_sessionId_table_name
+        print list_of_ref_sessionIds
+
+    try:
+        list_of_comp_sessionIds= connect_mysql.select_phase2_major_version_database(major_version_database,comp_sessionId_table_name)
+    except IOError:
+        print "ERROR : Comparable table does not exist :", comp_sessionId_table_name
+    try:
+        rows_in_ref_sessionId_table = range(len(list_of_ref_sessionIds))
+        rows_in_comp_sessionId_table = range(len(list_of_comp_sessionIds))
+        for i in rows_in_comp_sessionId_table:
+            ref_action_file_data = extract_p2_action_file_contents(list_of_ref_sessionIds[i])
+            comp_action_file_data = extract_p2_action_file_contents(list_of_comp_sessionIds[i])
+            print "******************************************** Test #: ",i, "******************************************** \n"
+            print "SessionID ", list_of_ref_sessionIds[i], " VS ", list_of_comp_sessionIds[i], "\n"
+            print ref_action_file_data
+            print "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+            print "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+            print "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+            print comp_action_file_data
+
+
+    except:
+        print "#################################################### TABLE ERROR: Please check if given reference table", ref_sessionId_table_name,  "and comparable table exist", comp_sessionId_table_name, "########################################################"
+
+
+p2_jenkins_database='backup_phase_two_jenkins_sids'
+jenkins_mv1_reference_version_sessionId_table='sessionids_phase2_1_635'
+jenkins_mv1_compare_version_sessionId_table='sessionids_phase2_1_625'
+connect_mysql = Phase2MysqlPython('localhost', 'root', '', p2_jenkins_database)
+
+get_all_processed_contents('jenkins_mv1',jenkins_mv1_reference_version_sessionId_table,jenkins_mv1_compare_version_sessionId_table)
